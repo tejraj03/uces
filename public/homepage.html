@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=chevron_left" />
+    <link rel="stylesheet" href="homepage.css">
+    <link rel="icon" type="image.jpg" href="">
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo_content">
+            <div class="logo">
+                <div class="logo_name">Student Portal</div>
+            </div>
+        </div>
+
+        <ul class="nav_list">
+            <li>
+                <a href="#">
+                    <i class='bx bxs-grid-alt'></i>
+                    <span class="links_name">Dashboard</span>
+                </a>
+            </li>
+            
+            <li id="userMenu">
+                <a href="#">
+                    <i class='bx bx-user'></i>
+                    <span class="links_name">User</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <i class='bx bx-pie-chart'></i>
+                    <span class="links_name">Add/Drop Courses</span>
+                </a>
+            </li>
+
+            <li>
+                <a href="#">
+                    <i class='bx bxs-cog'></i>
+                    <span class="links_name">Setting</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="profile_content">
+            <div class="profile">
+                <div class="profile_details">
+                    <div class="name_job">
+                        <div class="name" id="userName">Loading...</div>
+                        <div class="rno" id="userId"></div>
+                    </div>
+                </div>
+                <i class='bx bx-log-out' id="log_out"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Details Section -->
+    <div class="user_details" id="userDetails">
+        <h2>User Information</h2>
+        <p><strong>Name:</strong> <span id="detailName"></span></p>
+        <p><strong>User ID:</strong> <span id="detailId"></span></p>
+        <p><strong>Email:</strong> <span id="detailEmail"></span></p>
+        <p><strong>Role:</strong> <span id="detailRole"></span></p>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const userMenu = document.getElementById("userMenu");
+            const userDetails = document.getElementById("userDetails");
+    
+            // Fetch user data for sidebar
+            fetch('/user-data')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById("userName").textContent = data.name;
+                        document.getElementById("userId").textContent = "ID: " + data.user_id;
+                    } else {
+                        window.location.href = "/login.html"; // Redirect to login if not authenticated
+                    }
+                })
+                .catch(error => console.error("Error fetching user data:", error));
+    
+            // Toggle user details when clicking "User" menu
+            userMenu.addEventListener("click", function () {
+                fetch('/user-data')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById("detailName").textContent = data.name;
+                            document.getElementById("detailId").textContent = data.user_id;
+                            document.getElementById("detailEmail").textContent = data.email;
+                            document.getElementById("detailRole").textContent = data.role;
+    
+                            // Toggle visibility & highlight
+                            userDetails.classList.toggle("active");
+                            userMenu.classList.toggle("active");
+                        }
+                    })
+                    .catch(error => console.error("Error fetching user details:", error));
+            });
+    
+            // Logout functionality
+            document.getElementById("log_out").addEventListener("click", function () {
+                fetch('/logout', { method: 'POST' })
+                    .then(() => window.location.href = "/login.html"); // Redirect to login page
+            });
+    
+            // Close user details when clicking outside
+            document.addEventListener("click", function (event) {
+                if (!userMenu.contains(event.target) && !userDetails.contains(event.target)) {
+                    userDetails.classList.remove("active");
+                    userMenu.classList.remove("active");
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>Login</header>
+        <form action="http://localhost:3000/login" method="post" onsubmit="saveLoginInfo()">
+            <label>Email</label>
+            <input type="email" name="email" id="email" required>
+
+            <label>Password</label>
+            <input type="password" name="password" id="password" required>
+
+            <div class="forgot">
+                <section>
+                    <input type="checkbox" id="rememberMe">
+                    <label for="rememberMe">Remember Me</label>
+                </section>
+                <section>
+                    <a href="#">Forgot password?</a>                
+                </section>
+            </div>
+
+            <button type="submit">Sign In</button>
+        </form>
+        <div class="sign-up">
+            <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Load stored email when page loads
+        window.onload = function() {
+            if (localStorage.getItem("rememberMe") === "true") {
+                document.getElementById("email").value = localStorage.getItem("email");
+                document.getElementById("rememberMe").checked = true;
+            }
+        };
+
+        // Save login info if "Remember Me" is checked
+        function saveLoginInfo() {
+            let email = document.getElementById("email").value;
+            let rememberMe = document.getElementById("rememberMe").checked;
+
+            if (rememberMe) {
+                localStorage.setItem("email", email);
+                localStorage.setItem("rememberMe", "true");
+            } else {
+                localStorage.removeItem("email");
+                localStorage.removeItem("rememberMe");
+            }
+        }
+    </script>
+</body>
+</html>
+
