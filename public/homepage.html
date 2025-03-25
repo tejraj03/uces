@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=chevron_left" />
     <link rel="stylesheet" href="homepage.css">
     <link rel="icon" type="image.jpg" href="">
-
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
 
@@ -62,35 +62,70 @@
         </div>
     </div>
 
+
+    <!-- Dashboard Welcome Section -->
+    <div class="dashboard_welcome" id="dashboardWelcome">
+        <h1>Welcome, <span id="welcomeName">Student</span>!</h1>
+        <p>Access your academic information and manage your courses.</p>
+    </div>
+
     <!-- User Details Section -->
     <div class="user_details" id="userDetails">
-        <h2>User Information</h2>
-        <p><strong>Name:</strong> <span id="detailName"></span></p>
-        <p><strong>User ID:</strong> <span id="detailId"></span></p>
-        <p><strong>Email:</strong> <span id="detailEmail"></span></p>
-        <p><strong>Role:</strong> <span id="detailRole"></span></p>
+        <div class="user_details_header">
+            <h2>User Information</h2>
+            <i class='bx bx-x' id="closeUserDetails"></i>
+        </div>
+        <div class="user_detail_item">
+            <div class="detail_label">Name</div>
+            <div class="detail_value" id="detailName">-</div>
+        </div>
+        <div class="user_detail_item">
+            <div class="detail_label">User ID</div>
+            <div class="detail_value" id="detailId">-</div>
+        </div>
+        <div class="user_detail_item">
+            <div class="detail_label">Email</div>
+            <div class="detail_value" id="detailEmail">-</div>
+        </div>
+        <div class="user_detail_item">
+            <div class="detail_label">Role</div>
+            <div class="detail_value" id="detailRole">-</div>
+        </div>
     </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const userMenu = document.getElementById("userMenu");
             const userDetails = document.getElementById("userDetails");
-    
-            // Fetch user data for sidebar
+            const closeUserDetails = document.getElementById("closeUserDetails");
+            
+            // Fetch user data for sidebar and welcome message
             fetch('/user-data')
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
+                        // Update sidebar profile
                         document.getElementById("userName").textContent = data.name;
                         document.getElementById("userId").textContent = "ID: " + data.user_id;
+                        
+                        // Update welcome message
+                        document.getElementById("welcomeName").textContent = data.name.split(' ')[0]; // First name only
                     } else {
                         window.location.href = "/login.html"; // Redirect to login if not authenticated
                     }
                 })
-                .catch(error => console.error("Error fetching user data:", error));
+                .catch(error => {
+                    console.error("Error fetching user data:", error);
+                    // For development/demo only
+                    document.getElementById("userName").textContent = "John Doe";
+                    document.getElementById("userId").textContent = "ID: ST12345";
+                    document.getElementById("welcomeName").textContent = "John";
+                });
     
             // Toggle user details when clicking "User" menu
-            userMenu.addEventListener("click", function () {
+            userMenu.addEventListener("click", function (event) {
+                event.preventDefault();
+                
                 fetch('/user-data')
                     .then(response => response.json())
                     .then(data => {
@@ -99,24 +134,49 @@
                             document.getElementById("detailId").textContent = data.user_id;
                             document.getElementById("detailEmail").textContent = data.email;
                             document.getElementById("detailRole").textContent = data.role;
-    
-                            // Toggle visibility & highlight
-                            userDetails.classList.toggle("active");
-                            userMenu.classList.toggle("active");
+                        } else {
+                            // For development/demo
+                            document.getElementById("detailName").textContent = "John Doe";
+                            document.getElementById("detailId").textContent = "ST12345";
+                            document.getElementById("detailEmail").textContent = "john.doe@example.edu";
+                            document.getElementById("detailRole").textContent = "Student";
                         }
+                        
+                        // Show user details
+                        userDetails.classList.add("active");
+                        userMenu.classList.add("active");
                     })
-                    .catch(error => console.error("Error fetching user details:", error));
+                    .catch(error => {
+                        console.error("Error fetching user details:", error);
+                        // For development/demo
+                        document.getElementById("detailName").textContent = "John Doe";
+                        document.getElementById("detailId").textContent = "ST12345";
+                        document.getElementById("detailEmail").textContent = "john.doe@example.edu";
+                        document.getElementById("detailRole").textContent = "Student";
+                        
+                        userDetails.classList.add("active");
+                        userMenu.classList.add("active");
+                    });
+            });
+            
+            // Close user details when clicking X button
+            closeUserDetails.addEventListener("click", function() {
+                userDetails.classList.remove("active");
+                userMenu.classList.remove("active");
             });
     
             // Logout functionality
             document.getElementById("log_out").addEventListener("click", function () {
                 fetch('/logout', { method: 'POST' })
-                    .then(() => window.location.href = "/login.html"); // Redirect to login page
+                    .then(() => window.location.href = "/login.html")
+                    .catch(() => window.location.href = "/login.html");
             });
     
             // Close user details when clicking outside
             document.addEventListener("click", function (event) {
-                if (!userMenu.contains(event.target) && !userDetails.contains(event.target)) {
+                if (!userMenu.contains(event.target) && 
+                    !userDetails.contains(event.target) &&
+                    userDetails.classList.contains("active")) {
                     userDetails.classList.remove("active");
                     userMenu.classList.remove("active");
                 }

@@ -22,8 +22,8 @@ app.use(session({
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "123456",
-    database: "University_Course_Enrollment",
+    password: "Sabs120705*",
+    database: "university_course_enrollment",
 });
 
 db.connect(err => {
@@ -104,8 +104,16 @@ app.post("/logout", (req, res) => {
     });
 });
 
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "welcome.html"));
+});
+app.get("/login", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "login.html"));
+});
+
 // Start Server
 app.listen(port, () => {
     console.log(`🚀 Server running at http://localhost:${port}`);
 });
+// Add this route to your server.js
 
