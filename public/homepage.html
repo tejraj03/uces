@@ -18,36 +18,32 @@
                 <div class="logo_name">Student Portal</div>
             </div>
         </div>
-
         <ul class="nav_list">
-            <li>
+            <li id="dashboardMenu">
                 <a href="#">
                     <i class='bx bxs-grid-alt'></i>
                     <span class="links_name">Dashboard</span>
                 </a>
             </li>
-            
-            <li id="userMenu">
-                <a href="#">
-                    <i class='bx bx-user'></i>
-                    <span class="links_name">User</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
-                    <i class='bx bx-pie-chart'></i>
-                    <span class="links_name">Add/Drop Courses</span>
-                </a>
-            </li>
-
-            <li>
-                <a href="#">
-                    <i class='bx bxs-cog'></i>
-                    <span class="links_name">Setting</span>
-                </a>
-            </li>
-        </ul>
+        <li id="userMenu">
+            <a href="#">
+                <i class='bx bx-user'></i>
+                <span class="links_name">User</span>
+            </a>
+        </li>
+        <li id="addDropCoursesMenu">
+            <a href="#">
+                <i class='bx bx-pie-chart'></i>
+                <span class="links_name">Add/Drop Courses</span>
+            </a>
+        </li>
+        <li id="settingsMenu">
+            <a href="#">
+                <i class='bx bxs-cog'></i>
+                <span class="links_name">Settings</span>
+            </a>
+        </li>
+    </ul>
 
         <div class="profile_content">
             <div class="profile">
@@ -63,126 +59,196 @@
     </div>
 
 
-    <!-- Dashboard Welcome Section -->
-    <div class="dashboard_welcome" id="dashboardWelcome">
-        <h1>Welcome, <span id="welcomeName">Student</span>!</h1>
-        <p>Access your academic information and manage your courses.</p>
-    </div>
+<!-- Dashboard Welcome Section -->
+<div class="dashboard_welcome" id="dashboardWelcome">
+    <h1>Welcome, <span id="welcomeName">Loading...</span>!</h1>
+    <p>Access your academic information and manage your courses.</p>
+</div>
 
-    <!-- User Details Section -->
-    <div class="user_details" id="userDetails">
+<!-- User Details Section -->
+<div class="user_details" id="userDetails" style="display: none;">
+    <div class="user_details_card">
         <div class="user_details_header">
             <h2>User Information</h2>
-            <i class='bx bx-x' id="closeUserDetails"></i>
         </div>
-        <div class="user_detail_item">
-            <div class="detail_label">Name</div>
-            <div class="detail_value" id="detailName">-</div>
-        </div>
-        <div class="user_detail_item">
-            <div class="detail_label">User ID</div>
-            <div class="detail_value" id="detailId">-</div>
-        </div>
-        <div class="user_detail_item">
-            <div class="detail_label">Email</div>
-            <div class="detail_value" id="detailEmail">-</div>
-        </div>
-        <div class="user_detail_item">
-            <div class="detail_label">Role</div>
-            <div class="detail_value" id="detailRole">-</div>
+        <div class="user_details_body">
+            <div class="user_detail_item">
+                <span class="detail_label">Name:</span>
+                <span class="detail_value" id="detailName">-</span>
+            </div>
+            <div class="user_detail_item">
+                <span class="detail_label">User ID:</span>
+                <span class="detail_value" id="detailId">-</span>
+            </div>
+            <div class="user_detail_item">
+                <span class="detail_label">Email:</span>
+                <span class="detail_value" id="detailEmail">-</span>
+            </div>
+            <div class="user_detail_item">
+                <span class="detail_label">Role:</span>
+                <span class="detail_value" id="detailRole">-</span>
+            </div>
         </div>
     </div>
+</div>
+<!-- Add/Drop Courses Section -->
+<div class="courses_section" id="coursesSection" style="display: none;">
+    <h2>Available Courses</h2>
+    <table id="courses-table">
+        <thead>
+            <tr>
+                <th>Course ID</th>
+                <th>Course Name</th>
+                <th>Credits</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Courses will be dynamically loaded here -->
+        </tbody>
+    </table>
+</div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const userMenu = document.getElementById("userMenu");
-            const userDetails = document.getElementById("userDetails");
-            const closeUserDetails = document.getElementById("closeUserDetails");
-            
-            // Fetch user data for sidebar and welcome message
-            fetch('/user-data')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        // Update sidebar profile
-                        document.getElementById("userName").textContent = data.name;
-                        document.getElementById("userId").textContent = "ID: " + data.user_id;
-                        
-                        // Update welcome message
-                        document.getElementById("welcomeName").textContent = data.name.split(' ')[0]; // First name only
-                    } else {
-                        window.location.href = "/login.html"; // Redirect to login if not authenticated
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching user data:", error);
-                    // For development/demo only
-                    document.getElementById("userName").textContent = "John Doe";
-                    document.getElementById("userId").textContent = "ID: ST12345";
-                    document.getElementById("welcomeName").textContent = "John";
-                });
-    
-            // Toggle user details when clicking "User" menu
-            userMenu.addEventListener("click", function (event) {
-                event.preventDefault();
-                
-                fetch('/user-data')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            document.getElementById("detailName").textContent = data.name;
-                            document.getElementById("detailId").textContent = data.user_id;
-                            document.getElementById("detailEmail").textContent = data.email;
-                            document.getElementById("detailRole").textContent = data.role;
-                        } else {
-                            // For development/demo
-                            document.getElementById("detailName").textContent = "John Doe";
-                            document.getElementById("detailId").textContent = "ST12345";
-                            document.getElementById("detailEmail").textContent = "john.doe@example.edu";
-                            document.getElementById("detailRole").textContent = "Student";
-                        }
-                        
-                        // Show user details
-                        userDetails.classList.add("active");
-                        userMenu.classList.add("active");
-                    })
-                    .catch(error => {
-                        console.error("Error fetching user details:", error);
-                        // For development/demo
-                        document.getElementById("detailName").textContent = "John Doe";
-                        document.getElementById("detailId").textContent = "ST12345";
-                        document.getElementById("detailEmail").textContent = "john.doe@example.edu";
-                        document.getElementById("detailRole").textContent = "Student";
-                        
-                        userDetails.classList.add("active");
-                        userMenu.classList.add("active");
+// Fetch and display the user's name and ID in the sidebar
+// Fetch and display the user's name and ID in the sidebar
+fetch('/user-data')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById("userName").textContent = data.name;
+            document.getElementById("userId").textContent = `ID: ${data.user_id}`;
+            document.getElementById("welcomeName").textContent = data.name; // Update the dashboard welcome message
+        } else {
+            document.getElementById("userName").textContent = "Guest";
+            document.getElementById("userId").textContent = "";
+            document.getElementById("welcomeName").textContent = "Guest";
+        }
+    })
+    .catch(err => {
+        console.error("Error fetching user data:", err);
+        document.getElementById("userName").textContent = "Error";
+        document.getElementById("userId").textContent = "";
+        document.getElementById("welcomeName").textContent = "Error";
+    });
+    const dashboardMenu = document.getElementById("dashboardMenu");
+    const userMenu = document.getElementById("userMenu");
+    const addDropCoursesMenu = document.getElementById("addDropCoursesMenu");
+    const settingsMenu = document.getElementById("settingsMenu");
+
+    const dashboardWelcome = document.getElementById("dashboardWelcome");
+    const userDetails = document.getElementById("userDetails");
+    const coursesSection = document.getElementById("coursesSection");
+
+    // Function to hide all sections
+    function hideAllSections() {
+        dashboardWelcome.style.display = "none";
+        userDetails.style.display = "none";
+        coursesSection.style.display = "none";
+    }
+
+    // Show Dashboard
+    dashboardMenu.addEventListener("click", function (event) {
+        event.preventDefault();
+        hideAllSections();
+        dashboardWelcome.style.display = "block";
+    });
+
+    // Show User Information
+    // Show User Information
+userMenu.addEventListener("click", function (event) {
+    event.preventDefault();
+    hideAllSections();
+    userDetails.style.display = "block";
+
+    // Fetch and display user data
+    fetch('/user-data')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById("detailName").textContent = data.name;
+                document.getElementById("detailId").textContent = `ID: ${data.user_id}`;
+                document.getElementById("detailEmail").textContent = data.email;
+                document.getElementById("detailRole").textContent = data.role.charAt(0).toUpperCase() + data.role.slice(1); // Capitalize role
+            } else {
+                alert("Error fetching user information. Please try again.");
+            }
+        })
+        .catch(err => console.error("Error fetching user data:", err));
+});    // Handle logout functionality
+const logoutIcon = document.getElementById("log_out");
+logoutIcon.addEventListener("click", function () {
+    fetch('/logout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+        .then(response => {
+            if (response.ok) {
+                // Redirect to the login page after successful logout
+                window.location.href = "/login";
+            } else {
+                alert("Error logging out. Please try again.");
+            }
+        })
+        .catch(err => console.error("Error logging out:", err));
+});
+
+    // Show Add/Drop Courses Section
+    addDropCoursesMenu.addEventListener("click", function (event) {
+        event.preventDefault();
+        hideAllSections();
+        coursesSection.style.display = "block";
+
+        // Fetch and display courses
+        fetch('/courses')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const tbody = document.querySelector('#courses-table tbody');
+                    tbody.innerHTML = ""; // Clear existing rows
+                    data.courses.forEach(course => {
+                        tbody.innerHTML += `
+                            <tr>
+                                <td>${course.course_id}</td>
+                                <td>${course.course_name}</td>
+                                <td>${course.credits}</td>
+                                <td>
+                                    <button onclick="submitRequest(${course.course_id}, 'add')">Add</button>
+                                    <button onclick="submitRequest(${course.course_id}, 'drop')">Drop</button>
+                                </td>
+                            </tr>
+                        `;
                     });
-            });
-            
-            // Close user details when clicking X button
-            closeUserDetails.addEventListener("click", function() {
-                userDetails.classList.remove("active");
-                userMenu.classList.remove("active");
-            });
-    
-            // Logout functionality
-            document.getElementById("log_out").addEventListener("click", function () {
-                fetch('/logout', { method: 'POST' })
-                    .then(() => window.location.href = "/login.html")
-                    .catch(() => window.location.href = "/login.html");
-            });
-    
-            // Close user details when clicking outside
-            document.addEventListener("click", function (event) {
-                if (!userMenu.contains(event.target) && 
-                    !userDetails.contains(event.target) &&
-                    userDetails.classList.contains("active")) {
-                    userDetails.classList.remove("active");
-                    userMenu.classList.remove("active");
                 }
-            });
-        });
-    </script>
+            })
+            .catch(err => console.error("Error fetching courses:", err));
+    });
+
+    // Show Settings (if applicable)
+    settingsMenu.addEventListener("click", function (event) {
+        event.preventDefault();
+        hideAllSections();
+        alert("Settings page is under construction.");
+    });
+
+    // Submit add/drop request
+    window.submitRequest = function (courseId, action) {
+        fetch('/enrollment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                student_id: document.getElementById("userId").textContent.split(": ")[1], // Extract logged-in user ID
+                course_id: courseId,
+                action: action,
+            })
+        })
+            .then(response => response.text())
+            .then(message => alert(message))
+            .catch(err => console.error("Error submitting request:", err));
+    };
+});
+ </script>
 
 </body>
 </html>
