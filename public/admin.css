@@ -1,0 +1,129 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Winky Sans", 'Poppins', sans-serif;
+}
+
+body {
+    position: relative;
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    background-color: #f5f5f5;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.side-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #2C2E39;
+    width: 290px;
+    height: 100%;
+    padding: 3px 7px;
+    transition: width 0.5s ease-in-out;
+    z-index: 100;
+    /* border-radius: 0 21px 21px 0;     */
+}
+
+.side-bar.closed {
+    width: 80px; 
+}
+
+.side-bar.closed .menu li a span {
+    display: none; 
+}
+
+.side-bar.closed .header {
+    text-align: center;
+    font-size: 24px;
+}
+
+.header {
+    padding-top: 18px;
+    margin: 10px;
+    font-size: 36px;
+    font-weight: bold;
+    color: rgb(255, 255, 255);
+    transition: font-size 0.3s ease-in-out;
+}
+
+/* Sidebar Menu */
+.menu {
+    margin: 12px;
+    position: absolute;
+}
+
+.menu li {
+    list-style: none;
+    padding: 8px 10px 10px 15px;
+}
+
+.menu li a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: azure;
+    transition: background-color 0.1s ease-in-out, transform 0.2s ease-in-out;
+    padding: 6px;
+    border-radius: 12px;
+}
+
+.menu li a i {
+    font-size: 30px;
+    margin-right: 10px;
+}
+
+.menu li a:hover {
+    color: rosybrown;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.logout {
+    position: absolute;
+    bottom: 20px;
+    margin-left: 20px;
+    z-index: 100;
+    font-size: 35px;
+}
+
+.logout a i {
+    color: azure;
+}
+
+/* Dark Mode Styles */
+.dark-mode {
+    background-color: #222121;
+    color: #ffffff;
+}
+
+.dark-mode .side-bar {
+    background: #151515;
+}
+
+.dark-mode .menu li a {
+    color: #ffffff;
+}
+
+.dark-mode .menu li a:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Dark Mode Toggle Button */
+#dark-mode-toggle {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: #57575d;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    border-radius: 800px;
+}
+
+#dark-mode-toggle:hover {
+    background: #676666;
+}

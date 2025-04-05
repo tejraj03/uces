@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin</title>
+    <link rel="stylesheet" href="admin.css">
+    <link rel="icon" href="../public/admin.png">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=dashboard" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Winky+Sans:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+
+</head>
+<body>
+    <div class="container">
+        <div class="side-bar">
+            <div class="header">
+                <p>Admin</p>
+            </div>
+            <hr class="hr">
+            <ul class="menu">
+                <li>
+                    <a href="#" class="dashboard">
+                        <i class='bx bxl-slack'></i>
+                    Manage Students</a>
+                </li>
+                <li>
+                    <a href="#" class="userinfo">
+                        <i class='bx bxs-book' ></i>
+                    Add/Drop Courses</a>
+                </li>
+                <li>
+                    <a href="#" class="registered-student">
+                        <i class='bx bxs-user-account'></i>
+                        Add/Drop/Modify Instructor
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="assignment">
+                        <i class='bx bx-notepad' ></i>
+                        Announcement
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="setting">
+                        <i class='bx bxs-cog' ></i>
+                        Setting
+                    </a>
+                </li>
+            </ul>
+
+            <div class="logout">
+                    <a href="#">
+                        <i class='bx bx-log-out' ></i>
+                    </a>
+            </div>
+        </div>
+
+        <!-- Dark Mode Toggle Button -->
+        <button id="dark-mode-toggle">
+            <i class='bx bx-sun'></i> <!-- Default icon (Sun) -->
+        </button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const darkModeToggle = document.getElementById("dark-mode-toggle");
+            const body = document.body;
+            const icon = darkModeToggle.querySelector("i"); // Select the icon inside the button
+
+            // Function to update icon
+            function updateIcon() {
+                if (body.classList.contains("dark-mode")) {
+                    icon.classList.remove("bx-sun");
+                    icon.classList.add("bx-moon");
+                } else {
+                    icon.classList.remove("bx-moon");
+                    icon.classList.add("bx-sun");
+                }
+            }
+
+            // Dark Mode Toggle
+            darkModeToggle.addEventListener("click", () => {
+                body.classList.toggle("dark-mode");
+
+                // Save preference in local storage
+                localStorage.setItem("darkMode", body.classList.contains("dark-mode"));
+
+                // Update icon
+                updateIcon();
+            });
+
+            // Load Dark Mode Preference from Local Storage
+            if (localStorage.getItem("darkMode") === "true") {
+                body.classList.add("dark-mode");
+            }
+
+            // Ensure correct icon on load
+            updateIcon();
+        });
+    </script>
+    
+</body>
+</html>

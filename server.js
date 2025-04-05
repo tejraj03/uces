@@ -112,7 +112,13 @@ app.get("/user-data", (req, res) => {
     if (!req.session.user) {
         return res.json({ success: false });
     }
-    res.json({ success: true, ...req.session.user });
+    res.json({
+        success: true,
+        user_id: req.session.user.user_id,
+        name: req.session.user.name,
+        email: req.session.user.email,
+        role: req.session.user.role
+    });
 });
 
 // for instructor user information
@@ -243,4 +249,33 @@ app.listen(port, () => {
     console.log(`🚀 Server running at http://localhost:${port}`);
 });
 // Add this route to your server.js
+app.get("/courses", (req, res) => {
+    const sql = "SELECT course_id, course_name, credits FROM courses";
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error("❌ Error fetching courses:", err);
+            return res.status(500).json({ success: false, message: "Error fetching courses." });
+        }
+        res.json({ success: true, courses: results });
+    });
+});
+app.post("/enrollment", (req, res) => {
+    const { student_id, course_id, action } = req.body;
 
+    if (!['add', 'drop'].includes(action)) {
+        return res.status(400).send("Invalid action.");
+    }
+
+    const sql =
+        action === "add"
+            ? "INSERT INTO enrollment (student_id, course_id, status) VALUES (?, ?, 'pending') ON DUPLICATE KEY UPDATE status = 'pending'"
+            : "UPDATE enrollment SET status = 'dropped' WHERE student_id = ? AND course_id = ?";
+
+    db.query(sql, [student_id, course_id], (err) => {
+        if (err) {
+            console.error(`❌ Error processing ${action} request:`, err);
+            return res.status(500).send(`Error processing ${action} request.`);
+        }
+        res.send(`Request to ${action} course submitted.`);
+    });
+});
