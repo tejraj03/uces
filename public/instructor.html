@@ -11,7 +11,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Winky+Sans:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
-
 </head>
 <body>
     <div class="container">
@@ -27,9 +26,10 @@
                     Dashboard</a>
                 </li>
                 <li>
-                    <a href="#" class="userinfo">
+                    <a href="#" class="userinfo" id="showUserInfo">
                         <i class='bx bxs-user'></i>
-                    User Information</a>
+                        User Information
+                    </a>
                 </li>
                 <li>
                     <a href="#" class="registered-student">
@@ -44,7 +44,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="setting">
+                    <a href="#" class="setting" id="showSettings">
                         <i class='bx bxs-cog' ></i>
                         Setting
                     </a>
@@ -52,12 +52,40 @@
             </ul>
 
             <div class="logout">
-                    <a href="#">
+                    <a href="login.html">
                         <i class='bx bx-log-out' ></i>
                     </a>
             </div>
         </div>
-        </div>
+        <!-- Main dynamic content area (outside sidebar) -->
+        <div class="main-content">
+            <!-- Instructor Info Display -->
+            <div id="user-info" class="hidden info-container">
+                <p id="instructor-id"></p>
+                <p id="instructor-name"></p>
+                <p id="course-id"></p>
+                <p id="course-name"></p>
+            </div>
 
+            <!-- Settings Feature -->
+            <div id="settings" class="hidden">
+                <h2>Settings</h2>
+                <form id="email-form">
+                    <h3>Change Email</h3>
+                    <input type="email" placeholder="New Email" name="newEmail" required>
+                    <input type="password" placeholder="Current Password" name="currentPassword" required>
+                    <button type="submit">Update Email</button>
+                </form>
+                <form id="password-form">
+                    <h3>Change Password</h3>
+                    <input type="password" placeholder="Current Password" name="currentPassword" required>
+                    <input type="password" placeholder="New Password" name="newPassword" required>
+                    <button type="submit">Update Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="instructor.js"></script>
 </body>
 </html>
