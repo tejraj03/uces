@@ -45,20 +45,93 @@
                         Announcement
                     </a>
                 </li>
-                <li>
-                    <a href="#" class="setting">
-                        <i class='bx bxs-cog' ></i>
-                        Setting
-                    </a>
-                </li>
+
             </ul>
 
             <div class="logout">
-                    <a href="#">
+                    <a href="login.html">
                         <i class='bx bx-log-out' ></i>
                     </a>
             </div>
         </div>
+        <!-- Add this right before the dark mode toggle button -->
+<div class="main-content">
+    <div id="instructor-management" class="section hidden">
+        <div class="card">
+            <h2>Instructor Management</h2>
+            
+            <!-- Add Instructor Form -->
+            <div class="form-section">
+                <h3>Add New Instructor</h3>
+                <form id="add-instructor-form">
+                    <input type="text" name="instructorName" placeholder="Instructor Name" required>
+                    <input type="email" name="email" placeholder="Email" required>
+                    <input type="password" name="password" placeholder="Password" required>
+                    <select name="courseId" required>
+                        <option value="">Select Course</option>
+                        <!-- Courses will be loaded dynamically -->
+                    </select>
+                    <button type="submit">Add Instructor</button>
+                </form>
+            </div>
+
+            <!-- Instructors List -->
+            <div class="table-section">
+                <h3>Current Instructors</h3>
+                <table id="instructors-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Course</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Instructors will be loaded dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+<div id="course-management" class="section hidden">
+    <div class="card">
+        <h2>Course Management</h2>
+        <!-- Add Course Form -->
+        <div class="form-section">
+            <h3>Add New Course</h3>
+            <form id="add-course-form">
+                <input type="number" name="courseId" placeholder="Course ID" required>
+                <input type="text" name="courseName" placeholder="Course Name" required>
+                <input type="number" name="credits" placeholder="Credits" required>
+                <button type="submit">Add Course</button>
+            </form>
+        </div>
+
+        <!-- Courses List -->
+        <div class="table-section">
+            <h3>Current Courses</h3>
+            <table id="courses-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Course Name</th>
+                        <th>Credits</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Courses will be loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+    
+</div>
+
+
 
         <!-- Dark Mode Toggle Button -->
         <button id="dark-mode-toggle">
@@ -66,43 +139,7 @@
         </button>
     </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const darkModeToggle = document.getElementById("dark-mode-toggle");
-            const body = document.body;
-            const icon = darkModeToggle.querySelector("i"); // Select the icon inside the button
-
-            // Function to update icon
-            function updateIcon() {
-                if (body.classList.contains("dark-mode")) {
-                    icon.classList.remove("bx-sun");
-                    icon.classList.add("bx-moon");
-                } else {
-                    icon.classList.remove("bx-moon");
-                    icon.classList.add("bx-sun");
-                }
-            }
-
-            // Dark Mode Toggle
-            darkModeToggle.addEventListener("click", () => {
-                body.classList.toggle("dark-mode");
-
-                // Save preference in local storage
-                localStorage.setItem("darkMode", body.classList.contains("dark-mode"));
-
-                // Update icon
-                updateIcon();
-            });
-
-            // Load Dark Mode Preference from Local Storage
-            if (localStorage.getItem("darkMode") === "true") {
-                body.classList.add("dark-mode");
-            }
-
-            // Ensure correct icon on load
-            updateIcon();
-        });
-    </script>
-    
+    <!-- Add this right before the closing body tag -->
+<script src="admin.js"></script>    
 </body>
 </html>

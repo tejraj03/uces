@@ -96,11 +96,17 @@ app.post("/login", async (req, res) => {
             email: user.email,
             role: user.role
         };
+        // Add this right before the if statements
+console.log("User role:", user.role);
 
         // Redirect based on role
         if (user.role === "instructor") {
             res.redirect("/instructor.html");  // Redirect instructors
-        } else {
+        }
+        else if (user.role==="admin"){
+            res.redirect("/admin.html");  // Redirect admin
+        }
+        else {
             res.redirect("/homepage.html");   // Redirect other users
         }
         //res.redirect("/homepage.html");
@@ -277,5 +283,186 @@ app.post("/enrollment", (req, res) => {
             return res.status(500).send(`Error processing ${action} request.`);
         }
         res.send(`Request to ${action} course submitted.`);
+    });
+});
+// Add these routes after your existing routes
+
+// Get all instructors
+app.get("/api/instructors", (req, res) => {
+    const sql = `
+        SELECT i.instructor_id, i.instructor_name, u.email, i.course_id, c.course_name
+        FROM instructor i
+        JOIN users u ON i.instructor_id = u.user_id
+        JOIN courses c ON i.course_id = c.course_id
+    `;
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error("Error fetching instructors:", err);
+            return res.status(500).json({ success: false, message: "Error fetching instructors" });
+        }
+        res.json({ success: true, instructors: results });
+    });
+});
+
+// Add new instructor (updated to use nested callbacks)
+app.post("/api/instructors", (req, res) => {
+    const { instructorName, email, password, courseId } = req.body;
+    bcrypt.hash(password, 10, (err, hashedPassword) => {
+        if (err) {
+            console.error("❌ Error hashing password:", err);
+            return res.status(500).json({ success: false, message: "Error processing request" });
+        }
+    
+        db.beginTransaction((err) => {
+            if (err) return res.status(500).json({ success: false, message: "Transaction error" });
+    
+            const userSql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, 'instructor')";
+            db.query(userSql, [instructorName, email, hashedPassword], (err, result) => {
+                if (err) {
+                    return db.rollback(() => {
+                        console.error("❌ Error inserting user:", err);
+                        return res.status(500).json({ success: false, message: "Error adding instructor" });
+                    });
+                }
+    
+                const instructorId = result.insertId;
+                // Get the course name for given courseId
+                const getCourseNameSql = "SELECT course_name FROM courses WHERE course_id = ?";
+                db.query(getCourseNameSql, [courseId], (err, results) => {
+                    if (err || results.length === 0) {
+                        return db.rollback(() => {
+                            console.error("❌ Error fetching course name:", err || "Course not found");
+                            return res.status(500).json({ success: false, message: "Error adding instructor" });
+                        });
+                    }
+    
+                    const courseName = results[0].course_name;
+                    const instructorSql = "INSERT INTO instructor (instructor_id, instructor_name, course_id, course_name) VALUES (?, ?, ?, ?)";
+                    db.query(instructorSql, [instructorId, instructorName, courseId, courseName], (err) => {
+                        if (err) {
+                            return db.rollback(() => {
+                                console.error("❌ Error inserting instructor:", err);
+                                return res.status(500).json({ success: false, message: "Error adding instructor" });
+                            });
+                        }
+                        db.commit((err) => {
+                            if (err) {
+                                return res.status(500).json({ success: false, message: "Error committing transaction" });
+                            }
+                            res.json({ success: true, message: "Instructor added successfully" });
+                        });
+                    });
+                });
+            });
+        });
+    });
+});
+
+app.put("/api/instructors/:id", (req, res) => {
+    const instructorId = req.params.id;
+    const { name, email, courseId } = req.body;
+    
+    db.beginTransaction((err) => {
+        if (err) return res.status(500).json({ success: false, message: "Transaction error" });
+    
+        // Fetch the course name from courses table
+        const getCourseNameSql = "SELECT course_name FROM courses WHERE course_id = ?";
+        db.query(getCourseNameSql, [courseId], (err, results) => {
+            if (err || results.length === 0) {
+                return db.rollback(() => {
+                    console.error("❌ Error fetching course name:", err || "Course not found");
+                    return res.status(500).json({ success: false, message: "Error updating instructor" });
+                });
+            }
+    
+            const courseName = results[0].course_name;
+    
+            // Update the user's name and email
+            const updateUserSql = "UPDATE users SET name = ?, email = ? WHERE user_id = ?";
+            db.query(updateUserSql, [name, email, instructorId], (err) => {
+                if (err) {
+                    return db.rollback(() => {
+                        console.error("❌ Error updating user:", err);
+                        return res.status(500).json({ success: false, message: "Error updating instructor" });
+                    });
+                }
+    
+                // Update the instructor's name, course_id, and course_name
+                const updateInstructorSql = "UPDATE instructor SET instructor_name = ?, course_id = ?, course_name = ? WHERE instructor_id = ?";
+                db.query(updateInstructorSql, [name, courseId, courseName, instructorId], (err) => {
+                    if (err) {
+                        return db.rollback(() => {
+                            console.error("❌ Error updating instructor:", err);
+                            return res.status(500).json({ success: false, message: "Error updating instructor" });
+                        });
+                    }
+    
+                    db.commit((err) => {
+                        if (err) {
+                            return res.status(500).json({ success: false, message: "Error committing transaction" });
+                        }
+                        res.json({ success: true, message: "Instructor updated successfully" });
+                    });
+                });
+            });
+        });
+    });
+});
+// Delete instructor (updated to use nested callbacks)
+app.delete("/api/instructors/:id", (req, res) => {
+    const instructorId = req.params.id;
+
+    db.beginTransaction((err) => {
+        if (err) return res.status(500).json({ success: false, message: "Transaction error" });
+
+        const deleteInstructorSql = "DELETE FROM instructor WHERE instructor_id = ?";
+        db.query(deleteInstructorSql, [instructorId], (err) => {
+            if (err) {
+                return db.rollback(() => {
+                    console.error("❌ Error deleting instructor:", err);
+                    return res.status(500).json({ success: false, message: "Error deleting instructor" });
+                });
+            }
+
+            const deleteUserSql = "DELETE FROM users WHERE user_id = ?";
+            db.query(deleteUserSql, [instructorId], (err) => {
+                if (err) {
+                    return db.rollback(() => {
+                        console.error("❌ Error deleting user:", err);
+                        return res.status(500).json({ success: false, message: "Error deleting instructor" });
+                    });
+                }
+
+                db.commit((err) => {
+                    if (err) return res.status(500).json({ success: false, message: "Error committing transaction" });
+                    res.json({ success: true, message: "Instructor deleted successfully" });
+                });
+            });
+        });
+    });
+});
+// Add new course route
+app.post("/api/courses", (req, res) => {
+    const { course_id, course_name, credits } = req.body;
+    const sql = "INSERT INTO courses (course_id, course_name, credits) VALUES (?, ?, ?)";
+    db.query(sql, [course_id, course_name, credits], (err, result) => {
+        if (err) {
+            console.error("❌ Error adding course:", err);
+            return res.status(500).json({ success: false, message: "Error adding course" });
+        }
+        res.json({ success: true, message: "Course added successfully" });
+    });
+});
+
+// Delete course route
+app.delete("/api/courses/:id", (req, res) => {
+    const courseId = req.params.id;
+    const sql = "DELETE FROM courses WHERE course_id = ?";
+    db.query(sql, [courseId], (err, result) => {
+        if (err) {
+            console.error("❌ Error deleting course:", err);
+            return res.status(500).json({ success: false, message: "Error deleting course" });
+        }
+        res.json({ success: true, message: "Course deleted successfully" });
     });
 });
