@@ -108,6 +108,32 @@
         </tbody>
     </table>
 </div>
+<!-- Add this after the courses_section div -->
+<div class="settings_section" id="settingsSection" style="display: none;">
+    <div class="settings_card">
+        <div class="settings_header">
+            <h2>Settings</h2>
+        </div>
+        <div class="settings_body">
+            <form id="email-form" class="settings-form">
+                <h3>Change Email</h3>
+                <div class="form-group">
+                    <input type="email" placeholder="New Email" name="newEmail" required>
+                    <input type="password" placeholder="Current Password" name="currentPassword" required>
+                    <button type="submit">Update Email</button>
+                </div>
+            </form>
+            <form id="password-form" class="settings-form">
+                <h3>Change Password</h3>
+                <div class="form-group">
+                    <input type="password" placeholder="Current Password" name="currentPassword" required>
+                    <input type="password" placeholder="New Password" name="newPassword" required>
+                    <button type="submit">Update Password</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -141,12 +167,12 @@ fetch('/user-data')
     const userDetails = document.getElementById("userDetails");
     const coursesSection = document.getElementById("coursesSection");
 
-    // Function to hide all sections
-    function hideAllSections() {
-        dashboardWelcome.style.display = "none";
-        userDetails.style.display = "none";
-        coursesSection.style.display = "none";
-    }
+function hideAllSections() {
+    dashboardWelcome.style.display = "none";
+    userDetails.style.display = "none";
+    coursesSection.style.display = "none";
+    document.getElementById("settingsSection").style.display = "none";
+}
 
     // Show Dashboard
     dashboardMenu.addEventListener("click", function (event) {
@@ -225,12 +251,55 @@ logoutIcon.addEventListener("click", function () {
             .catch(err => console.error("Error fetching courses:", err));
     });
 
-    // Show Settings (if applicable)
-    settingsMenu.addEventListener("click", function (event) {
-        event.preventDefault();
-        hideAllSections();
-        alert("Settings page is under construction.");
-    });
+// Replace the existing settings menu click handler with this:
+settingsMenu.addEventListener("click", function (event) {
+    event.preventDefault();
+    hideAllSections();
+    document.getElementById("settingsSection").style.display = "block";
+});
+
+// Add these form handlers after the existing script
+document.getElementById("email-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const newEmail = this.newEmail.value;
+    const currentPassword = this.currentPassword.value;
+
+    try {
+        const res = await fetch("/update-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ newEmail, currentPassword })
+        });
+
+        const data = await res.json();
+        alert(data.message || "Email updated successfully!");
+        this.reset();
+    } catch (error) {
+        console.error("Error updating email:", error);
+        alert("Failed to update email. Please try again.");
+    }
+});
+
+document.getElementById("password-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const currentPassword = this.currentPassword.value;
+    const newPassword = this.newPassword.value;
+
+    try {
+        const res = await fetch("/update-password", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ currentPassword, newPassword })
+        });
+
+        const data = await res.json();
+        alert(data.message || "Password updated successfully!");
+        this.reset();
+    } catch (error) {
+        console.error("Error updating password:", error);
+        alert("Failed to update password. Please try again.");
+    }
+});
 
     // Submit add/drop request
     window.submitRequest = function (courseId, action) {

@@ -22,7 +22,7 @@ app.use(session({
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "123456",                        // Sabs120705*
+    password: "Sabs120705*",                        // Sabs120705*
     database: "University_Course_Enrollment",  // university_course_enrollment
 });
 

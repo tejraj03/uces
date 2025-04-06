@@ -371,3 +371,82 @@ body {
 #courses-table td button:last-child:hover {
     background: #e53935; /* Slightly darker red on hover */
 }
+/* Settings Section Styles */
+.settings_section {
+    margin: 20px auto;
+    padding: 20px;
+    max-width: calc(100% - 260px);
+    margin-left: 260px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.settings_card {
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.settings_header {
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    color: white;
+    padding: 20px;
+    text-align: center;
+}
+
+.settings_header h2 {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.settings_body {
+    padding: 30px;
+}
+
+.settings-form {
+    margin-bottom: 40px;
+}
+
+.settings-form h3 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 18px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.settings-form input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.settings-form input:focus {
+    border-color: #4e54c8;
+    outline: none;
+}
+
+.settings-form button {
+    background: #4e54c8;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    width: 150px;
+}
+
+.settings-form button:hover {
+    background: #3f43a3;
+}
