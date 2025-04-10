@@ -406,3 +406,229 @@ body {
     background: #c82333;
     transform: translateY(-2px);
 }
+/* Add these after your existing button styles */
+.approve-btn {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-right: 8px;
+}
+
+.reject-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.approve-btn:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+.reject-btn:hover {
+    background-color: #c82333;
+    transform: translateY(-2px);
+}
+/* Add these styles after your existing table styles */
+.table-section {
+    margin: 20px 0;
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.table-section h3 {
+    color: #2C2E39;
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #eee;
+}
+
+/* Enrollment Tables Styling */
+#pending-enrollments-table,
+#current-enrollments-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin: 15px 0;
+}
+
+#pending-enrollments-table th,
+#current-enrollments-table th {
+    background: #2C2E39;
+    color: white;
+    padding: 15px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 14px;
+    border: none;
+    position: sticky;
+    top: 0;
+}
+
+#pending-enrollments-table td,
+#current-enrollments-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+}
+
+#pending-enrollments-table tr:hover,
+#current-enrollments-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Status cell styling */
+#current-enrollments-table td:nth-child(5) {
+    font-weight: 500;
+}
+
+.status-approved {
+    color: #28a745;
+}
+
+.status-pending {
+    color: #ffc107;
+}
+
+.status-dropped {
+    color: #dc3545;
+}
+
+/* Spacing between tables */
+.mt-4 {
+    margin-top: 2rem;
+}
+
+/* Dark mode adjustments */
+.dark-mode .table-section {
+    background: #333;
+}
+
+.dark-mode .table-section h3 {
+    color: #fff;
+    border-bottom-color: #444;
+}
+
+.dark-mode #pending-enrollments-table th,
+.dark-mode #current-enrollments-table th {
+    background: #222;
+}
+
+.dark-mode #pending-enrollments-table td,
+.dark-mode #current-enrollments-table td {
+    border-bottom-color: #444;
+}
+
+.dark-mode #pending-enrollments-table tr:hover,
+.dark-mode #current-enrollments-table tr:hover {
+    background-color: #3a3a3a;
+}
+/* Add these after your existing button styles */
+.re-enroll-btn {
+    background-color: #17a2b8;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.re-enroll-btn:hover {
+    background-color: #138496;
+    transform: translateY(-2px);
+}
+
+/* Update status styles */
+.status-dropped {
+    color: #dc3545;
+    font-weight: 500;
+    text-decoration: line-through;
+}
+
+.status-approved {
+    color: #28a745;
+    font-weight: 500;
+}
+/* Timetable Styles */
+.timetable-grid {
+    display: grid;
+    grid-template-columns: 100px repeat(5, 1fr);
+    gap: 1px;
+    background: #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.time-column {
+    background: #f4f4f4;
+}
+
+.time-header, .day-header {
+    padding: 15px;
+    background: #2C2E39;
+    color: white;
+    text-align: center;
+    font-weight: 500;
+}
+
+.time-slot {
+    padding: 20px 10px;
+    background: white;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+}
+
+.day-column {
+    background: white;
+}
+
+.class-slot {
+    padding: 10px;
+    margin: 5px;
+    background: #e3f2fd;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.class-slot .course-name {
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.class-slot .room {
+    font-size: 12px;
+    color: #666;
+}
+
+/* Admin Timetable Form Styles */
+#add-timetable-form {
+    display: grid;
+    gap: 15px;
+    max-width: 500px;
+    margin-bottom: 20px;
+}
+
+#add-timetable-form select,
+#add-timetable-form input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#timetable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}

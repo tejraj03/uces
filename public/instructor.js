@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const dashboardLink = document.querySelector(".dashboard");
     const userInfoLink = document.getElementById("showUserInfo");
     const registeredStudentLink = document.querySelector(".registered-student");
-    const assignmentLink = document.querySelector(".assignment");
     const settingsLink = document.getElementById("showSettings");
     
     // Get all content sections
@@ -26,36 +25,24 @@ document.addEventListener("DOMContentLoaded", function() {
     registeredStudentsSection.id = "registered-students";
     registeredStudentsSection.classList.add("hidden");
     registeredStudentsSection.innerHTML = `
-        <h2>Registered Students</h2>
-        <p>Manage your students and their enrollment status here.</p>
-        <table id="students-table">
-            <thead>
-                <tr>
-                    <th>Student ID</th>
-                    <th>Student Name</th>
-                    <th>Enrollment Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Students will be dynamically loaded here -->
-            </tbody>
-        </table>
+ <h2>Students Enrolled in Your Course</h2>
+        <div class="table-section">
+            <table id="students-table">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                        <th>Application Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Students will be loaded dynamically -->
+                </tbody>
+            </table>
     `;
     document.querySelector(".main-content").appendChild(registeredStudentsSection);
     
-    // Create placeholder for assignments section
-    const assignmentsSection = document.createElement("div");
-    assignmentsSection.id = "assignments";
-    assignmentsSection.classList.add("hidden");
-    assignmentsSection.innerHTML = `
-        <h2>Assignments</h2>
-        <p>Create and manage assignments for your students.</p>
-        <button id="create-assignment">Create New Assignment</button>
-        <div id="assignments-list">
-            <!-- Assignments will be dynamically loaded here -->
-        </div>
-    `;
-    document.querySelector(".main-content").appendChild(assignmentsSection);
     
     // Function to hide all sections
     function hideAllSections() {
@@ -63,7 +50,8 @@ document.addEventListener("DOMContentLoaded", function() {
         settingsSection.classList.add("hidden");
         dashboardSection.classList.add("hidden");
         registeredStudentsSection.classList.add("hidden");
-        assignmentsSection.classList.add("hidden");
+
+        
     }
     
     // Dashboard button click handler
@@ -107,61 +95,61 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     
     // Registered Students button click handler
-    registeredStudentLink.addEventListener("click", function(event) {
-        event.preventDefault();
-        hideAllSections();
-        registeredStudentsSection.classList.remove("hidden");
-        
-        // Mock data for demonstration - in a real app, this would be fetched from the server
-        const mockStudents = [
-            { id: "S001", name: "John Doe", enrollmentDate: "2023-09-01" },
-            { id: "S002", name: "Jane Smith", enrollmentDate: "2023-09-02" },
-            { id: "S003", name: "Robert Johnson", enrollmentDate: "2023-09-03" }
-        ];
-        
-        const tbody = document.querySelector("#students-table tbody");
-        tbody.innerHTML = ""; // Clear existing rows
-        
-        mockStudents.forEach(student => {
-            tbody.innerHTML += `
-                <tr>
-                    <td>${student.id}</td>
-                    <td>${student.name}</td>
-                    <td>${student.enrollmentDate}</td>
-                </tr>
-            `;
+// Add this after your existing event listeners
+registeredStudentLink.addEventListener("click", function(event) {
+    event.preventDefault();
+    hideAllSections();
+    document.getElementById("registered-students").classList.remove("hidden");
+    loadEnrolledStudents();
+});
+
+function loadEnrolledStudents() {
+    fetch("/get-instructor-data")
+        .then(response => response.json())
+        .then(instructorData => {
+            if (instructorData.success) {
+                return fetch(`/api/instructor-students/${instructorData.instructor_id}`);
+            }
+            throw new Error("Failed to get instructor data");
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const tbody = document.querySelector('#students-table tbody');
+                tbody.innerHTML = '';
+                
+                if (data.students.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="no-data">No students currently enrolled</td></tr>';
+                    return;
+                }
+
+                data.students.forEach(student => {
+                    const statusClass = student.status.toLowerCase();
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${student.student_id}</td>
+                            <td>${student.student_name}</td>
+                            <td>${student.student_email}</td>
+                            <td>
+                                <span class="status-badge ${statusClass}">
+                                    ${student.status}
+                                </span>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const tbody = document.querySelector('#students-table tbody');
+            tbody.innerHTML = '<tr><td colspan="4" class="error-message">Error loading students. Please try again.</td></tr>';
         });
-    });
-    
-    // Assignments button click handler
-    assignmentLink.addEventListener("click", function(event) {
-        event.preventDefault();
-        hideAllSections();
-        assignmentsSection.classList.remove("hidden");
-        
-        // Mock data for demonstration
-        const mockAssignments = [
-            { id: 1, title: "Midterm Assignment", dueDate: "2023-10-15" },
-            { id: 2, title: "Final Project", dueDate: "2023-12-01" }
-        ];
-        
-        const assignmentsList = document.getElementById("assignments-list");
-        assignmentsList.innerHTML = ""; // Clear existing assignments
-        
-        mockAssignments.forEach(assignment => {
-            const assignmentCard = document.createElement("div");
-            assignmentCard.classList.add("assignment-card");
-            assignmentCard.innerHTML = `
-                <h3>${assignment.title}</h3>
-                <p>Due Date: ${assignment.dueDate}</p>
-                <div class="assignment-actions">
-                    <button class="edit-assignment" data-id="${assignment.id}">Edit</button>
-                    <button class="delete-assignment" data-id="${assignment.id}">Delete</button>
-                </div>
-            `;
-            assignmentsList.appendChild(assignmentCard);
-        });
-    });
+}// Add this function for viewing student details
+window.viewStudentDetails = function(studentId) {
+    // Implement student details view functionality
+    alert('View student details functionality coming soon!');
+};    
     
     // Settings button click handler
     settingsLink.addEventListener("click", function(event) {

@@ -37,6 +37,13 @@
                 <span class="links_name">Add/Drop Courses</span>
             </a>
         </li>
+        <!-- Add this to the nav_list -->
+<li id="timetableMenu">
+    <a href="#">
+        <i class='bx bx-calendar'></i>
+        <span class="links_name">Timetable</span>
+    </a>
+</li>
         <li id="settingsMenu">
             <a href="#">
                 <i class='bx bxs-cog'></i>
@@ -63,6 +70,23 @@
 <div class="dashboard_welcome" id="dashboardWelcome">
     <h1>Welcome, <span id="welcomeName">Loading...</span>!</h1>
     <p>Access your academic information and manage your courses.</p>
+    <!-- Add this inside the dashboard_welcome div -->
+<div class="enrolled-courses-section">
+    <h2>My Enrolled Courses</h2>
+    <table id="enrolled-courses-table">
+        <thead>
+            <tr>
+                <th>Course ID</th>
+                <th>Course Name</th>
+                <th>Instructor</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Enrolled courses will be loaded here -->
+        </tbody>
+    </table>
+</div>
 </div>
 
 <!-- User Details Section -->
@@ -133,7 +157,7 @@
             </form>
         </div>
     </div>
-</div>
+   </div>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -172,6 +196,7 @@ function hideAllSections() {
     userDetails.style.display = "none";
     coursesSection.style.display = "none";
     document.getElementById("settingsSection").style.display = "none";
+    
 }
 
     // Show Dashboard
@@ -317,6 +342,88 @@ document.getElementById("password-form").addEventListener("submit", async functi
             .catch(err => console.error("Error submitting request:", err));
     };
 });
+// Replace the existing loadEnrolledCourses function with this:
+function loadEnrolledCourses() {
+    // Wait for userId to be available
+    const userIdElement = document.getElementById("userId");
+    if (!userIdElement || !userIdElement.textContent) {
+        console.log("Waiting for user ID to be available...");
+        setTimeout(loadEnrolledCourses, 500); // Try again in 500ms
+        return;
+    }
+
+    const studentId = userIdElement.textContent.split(": ")[1];
+    console.log("Loading courses for student:", studentId);
+
+    fetch(`/api/student-courses/${studentId}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const tbody = document.querySelector('#enrolled-courses-table tbody');
+            if (!tbody) {
+                console.error('Could not find tbody element');
+                return;
+            }
+
+            tbody.innerHTML = '';
+            
+            if (!data.success) {
+                tbody.innerHTML = '<tr><td colspan="4">Error: ' + (data.message || 'Could not load courses') + '</td></tr>';
+                return;
+            }
+            
+            if (!data.courses || data.courses.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">No courses enrolled yet</td></tr>';
+                return;
+            }
+            
+            data.courses.forEach(course => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${course.course_id || 'N/A'}</td>
+                        <td>${course.course_name || 'N/A'}</td>
+                        <td>${course.instructor_name || 'Not Assigned'}</td>
+                        <td class="status-${(course.status || 'pending').toLowerCase()}">${course.status || 'Pending'}</td>
+                    </tr>
+                `;
+            });
+        })
+        .catch(error => {
+            console.error('Error loading enrolled courses:', error);
+            const tbody = document.querySelector('#enrolled-courses-table tbody');
+            if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="4">Error loading enrolled courses. Please try again.</td></tr>';
+            }
+        });
+}
+
+// Update the DOMContentLoaded event listener
+document.addEventListener("DOMContentLoaded", function() {
+    // First load user data, then load courses
+    fetch('/user-data')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById("userName").textContent = data.name;
+                document.getElementById("userId").textContent = `ID: ${data.user_id}`;
+                document.getElementById("welcomeName").textContent = data.name;
+                // Now load courses after user data is loaded
+                loadEnrolledCourses();
+            }
+        })
+        .catch(err => {
+            console.error("Error fetching user data:", err);
+            const tbody = document.querySelector('#enrolled-courses-table tbody');
+            if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="4">Error: Could not load user data</td></tr>';
+            }
+        });
+});
+
  </script>
 
 </body>

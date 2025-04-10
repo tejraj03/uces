@@ -39,12 +39,13 @@
                         Add/Drop/Modify Instructor
                     </a>
                 </li>
-                <li>
-                    <a href="#" class="assignment">
-                        <i class='bx bx-notepad' ></i>
-                        Announcement
-                    </a>
-                </li>
+                <!-- Add this to the menu -->
+<li>
+    <a href="#" class="timetable">
+        <i class='bx bx-calendar'></i>
+        Manage Timetable
+    </a>
+</li>
 
             </ul>
 
@@ -128,7 +129,86 @@
         </div>
     </div>
 </div>
-    
+<div id="student-management" class="section hidden">
+    <div class="card">
+        <h2>Student Enrollment Management</h2>
+        <div class="table-section">
+            <h3>Pending Enrollments</h3>
+            <table id="pending-enrollments-table">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Student Name</th>
+                        <th>Course ID</th>
+                        <th>Course Name</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Pending enrollments will be loaded here -->
+                </tbody>
+            </table>
+
+            <h3 class="mt-4">Current Enrollments</h3>
+<!-- Update the current-enrollments-table tbody section -->
+<table id="current-enrollments-table">
+    <thead>
+        <tr>
+            <th>Student ID</th>
+            <th>Student Name</th>
+            <th>Course ID</th>
+            <th>Course Name</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Current enrollments will be loaded here -->
+    </tbody>
+</table>
+        </div>
+    </div>
+</div>    
+<div id="timetable-management" class="section hidden">
+    <div class="card">
+        <h2>Timetable Management</h2>
+        <div class="form-section">
+            <h3>Add Timetable Entry</h3>
+            <form id="add-timetable-form">
+                <select name="courseId" required>
+                    <option value="">Select Course</option>
+                </select>
+                <select name="day" required>
+                    <option value="">Select Day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                </select>
+                <input type="time" name="startTime" required>
+                <input type="time" name="endTime" required>
+                <input type="text" name="roomNumber" placeholder="Room Number" required>
+                <button type="submit">Add Entry</button>
+            </form>
+        </div>
+        <div class="table-section">
+            <h3>Current Timetable</h3>
+            <table id="timetable">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Course</th>
+                        <th>Time</th>
+                        <th>Room</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
 </div>
 
 

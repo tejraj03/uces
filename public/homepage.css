@@ -450,3 +450,96 @@ body {
 .settings-form button:hover {
     background: #3f43a3;
 }
+/* Update Dashboard Table Styles */
+.enrolled-courses-section {
+    margin-top: 30px;
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    color: #333; /* Dark text color */
+}
+
+.enrolled-courses-section h2 {
+    color: #333;
+    margin-bottom: 20px;
+    font-size: 24px;
+}
+
+#enrolled-courses-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 15px;
+    background: white;
+}
+
+#enrolled-courses-table th {
+    background: #2C2E39; /* Dark background for headers */
+    color: white; /* White text for headers */
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 2px solid #ddd;
+}
+
+#enrolled-courses-table td {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    background: white; /* White background for cells */
+    color: #333; /* Dark text for cells */
+}
+
+#enrolled-courses-table tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Status Colors - Make them more vibrant */
+.status-pending {
+    color: #f39c12;
+    font-weight: 600;
+    background-color: #fff3cd;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.status-approved {
+    color: #2ecc71;
+    font-weight: 600;
+    background-color: #d4edda;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+.status-dropped {
+    color: #e74c3c;
+    font-weight: 600;
+    background-color: #f8d7da;
+    padding: 5px 10px;
+    border-radius: 4px;
+}
+
+#enrolled-courses-table td[colspan="4"] {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+    background: #f8f9fa;
+}
+
+/* Add borders to the table */
+#enrolled-courses-table {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#enrolled-courses-table th:first-child,
+#enrolled-courses-table td:first-child {
+    padding-left: 20px;
+}
+
+#enrolled-courses-table th:last-child,
+#enrolled-courses-table td:last-child {
+    padding-right: 20px;
+}

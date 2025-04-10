@@ -1,4 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
+     // Hide all sections first
+     document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+    });
+
+    // Show student management section by default
+    document.getElementById('student-management').classList.add('active');
+    loadEnrollments(); // Load the enrollment data immediately
+
     const instructorSection = document.getElementById('instructor-management');
     const addInstructorForm = document.getElementById('add-instructor-form');
     const courseSelect = document.querySelector('select[name="courseId"]');
@@ -264,6 +273,249 @@ window.deleteCourse = function(courseId) {
         .catch(error => {
             console.error('Error:', error);
             alert('Failed to delete course');
+        });
+    }
+};
+// Add this to your existing DOMContentLoaded event listener
+document.querySelector('.dashboard').addEventListener('click', function(e) {
+    e.preventDefault();
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+    });
+    document.getElementById('student-management').classList.add('active');
+    loadEnrollments();
+});
+
+function loadEnrollments() {
+    // Load pending enrollments
+    fetch('/api/pending-enrollments')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const tbody = document.querySelector('#pending-enrollments-table tbody');
+                tbody.innerHTML = '';
+                data.enrollments.forEach(enrollment => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${enrollment.student_id}</td>
+                            <td>${enrollment.student_name}</td>
+                            <td>${enrollment.course_id}</td>
+                            <td>${enrollment.course_name}</td>
+                            <td>
+                                <button onclick="approveEnrollment(${enrollment.enrollment_id})" 
+                                        class="action-button approve-btn">Approve</button>
+                                <button onclick="rejectEnrollment(${enrollment.enrollment_id})" 
+                                        class="action-button reject-btn">Reject</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        });
+
+    // Load current enrollments
+// Update the current enrollments section in loadEnrollments function
+// Update the current enrollments section in loadEnrollments function
+fetch('/api/current-enrollments')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const tbody = document.querySelector('#current-enrollments-table tbody');
+            tbody.innerHTML = '';
+            data.enrollments.forEach(enrollment => {
+                const courses = enrollment.courses.split(', ');
+                const enrollmentIds = enrollment.enrollment_ids.split(',');
+                const statuses = enrollment.statuses.split(',');
+                const courseIds = enrollment.course_ids.split(','); // Add this line
+                
+                const coursesList = courses.map((course, index) => {
+                    const status = statuses[index];
+                    const enrollmentId = enrollmentIds[index];
+                    const courseId = courseIds[index]; // Add this line
+                    const actionButton = status === 'dropped' 
+                        ? `<button onclick="reEnrollStudent(${enrollmentId})" class="action-button re-enroll-btn">Re-enroll</button>`
+                        : `<button onclick="dropStudent(${enrollmentId})" class="action-button delete-btn">Drop</button>`;
+
+                    return `
+                        <tr>
+                            <td>${enrollment.student_id}</td>
+                            <td>${enrollment.student_name}</td>
+                            <td>${courseId}</td> <!-- Add Course ID -->
+                            <td>${course}</td>
+                            <td><span class="status-${status.toLowerCase()}">${status}</span></td>
+                            <td>${actionButton}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                tbody.innerHTML += coursesList;
+            });
+        }
+    });
+
+// Add the re-enroll function
+window.reEnrollStudent = function(enrollmentId) {
+    if (confirm('Are you sure you want to re-enroll this student?')) {
+        updateEnrollmentStatus(enrollmentId, 'approved');
+    }
+};}
+// Add these functions after loadEnrollments()
+window.approveEnrollment = function(enrollmentId) {
+    updateEnrollmentStatus(enrollmentId, 'approved');
+};
+
+window.rejectEnrollment = function(enrollmentId) {
+    updateEnrollmentStatus(enrollmentId, 'dropped');
+};
+
+function updateEnrollmentStatus(enrollmentId, status) {
+    fetch(`/api/enrollments/${enrollmentId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(`Enrollment ${status} successfully!`);
+            loadEnrollments(); // Reload both tables
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to update enrollment status');
+    });
+}
+
+// Add dropStudent function as well
+window.dropStudent = function(enrollmentId) {
+    if (confirm('Are you sure you want to drop this student from the course?')) {
+        updateEnrollmentStatus(enrollmentId, 'dropped');
+    }
+};
+// Add this with your other event listeners
+document.querySelector('.timetable').addEventListener('click', function(e) {
+    e.preventDefault();
+    // Hide all sections first
+    document.querySelectorAll('.section').forEach(section => {
+        section.classList.remove('active');
+    });
+    // Show timetable management
+    document.getElementById('timetable-management').classList.add('active');
+    loadTimetableManagement();
+});
+
+// Add these functions for timetable management
+function loadTimetableManagement() {
+    // Load courses for the dropdown
+    fetch('/courses')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const courseSelect = document.querySelector('#add-timetable-form select[name="courseId"]');
+                courseSelect.innerHTML = '<option value="">Select Course</option>';
+                data.courses.forEach(course => {
+                    courseSelect.innerHTML += `
+                        <option value="${course.course_id}">${course.course_name}</option>
+                    `;
+                });
+            }
+        });
+
+    // Load existing timetable entries
+    loadTimetableEntries();
+}
+
+function loadTimetableEntries() {
+    fetch('/api/timetable')
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const tbody = document.querySelector('#timetable tbody');
+                tbody.innerHTML = '';
+                data.timetable.forEach(entry => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${entry.day_of_week}</td>
+                            <td>${entry.course_name}</td>
+                            <td>${formatTime(entry.start_time)} - ${formatTime(entry.end_time)}</td>
+                            <td>${entry.room_number}</td>
+                            <td>
+                                <button onclick="deleteTimetableEntry(${entry.id})" 
+                                        class="action-button delete-btn">Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            }
+        })
+        .catch(error => console.error('Error loading timetable:', error));
+}
+
+// Helper function to format time
+function formatTime(timeString) {
+    return new Date('1970-01-01T' + timeString).toLocaleTimeString([], { 
+        hour: '2-digit', 
+        minute: '2-digit'
+    });
+}
+
+// Add timetable entry form submission
+document.getElementById('add-timetable-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = {
+        courseId: this.courseId.value,
+        day: this.day.value,
+        startTime: this.startTime.value,
+        endTime: this.endTime.value,
+        roomNumber: this.roomNumber.value
+    };
+
+    fetch('/api/timetable', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Timetable entry added successfully!');
+            this.reset();
+            loadTimetableEntries();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to add timetable entry');
+    });
+});
+
+// Delete timetable entry
+window.deleteTimetableEntry = function(id) {
+    if (confirm('Are you sure you want to delete this timetable entry?')) {
+        fetch(`/api/timetable/${id}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Timetable entry deleted successfully!');
+                loadTimetableEntries();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Failed to delete timetable entry');
         });
     }
 };

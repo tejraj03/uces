@@ -38,12 +38,13 @@
                         Manage Students
                     </a>
                 </li>
-                <li>
-                    <a href="#" class="assignment">
-                        <i class='bx bx-notepad' ></i>
-                        Assignment
-                    </a>
-                </li>
+                <!-- Add this to the menu -->
+<li>
+    <a href="#" class="timetable">
+        <i class='bx bx-calendar'></i>
+        Timetable
+    </a>
+</li>
                 <li>
                     <a href="#" class="setting" id="showSettings">
                         <i class='bx bxs-cog' ></i>
@@ -90,7 +91,29 @@
             <!-- Dashboard section, Registered Students section, and Assignments section 
                  will be dynamically created by JavaScript -->
         </div>
+  <!-- Replace the existing students-table in instructor.html -->
+<div id="registered-students" class="section hidden">
+    <div class="card">
+        <h2>Students Enrolled in Your Course</h2>
+        <div class="table-section">
+            <table id="students-table">
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Student Name</th>
+                        <th>Email</th>
+                        <th>Application Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Students will be loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
     </div>
+</div>
+</div>
+
     
     <script src="instructor.js"></script>
 </body>

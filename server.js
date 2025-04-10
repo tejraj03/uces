@@ -466,3 +466,197 @@ app.delete("/api/courses/:id", (req, res) => {
         res.json({ success: true, message: "Course deleted successfully" });
     });
 });
+// Get pending enrollments
+app.get('/api/pending-enrollments', (req, res) => {
+    const sql = `
+        SELECT e.enrollment_id, e.student_id, u.name as student_name, 
+               e.course_id, c.course_name, e.status
+        FROM enrollment e
+        JOIN users u ON e.student_id = u.user_id
+        JOIN courses c ON e.course_id = c.course_id
+        WHERE e.status = 'pending'
+        ORDER BY e.enrollment_id DESC`;
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching pending enrollments:', err);
+            return res.status(500).json({ success: false, message: 'Error fetching enrollments' });
+        }
+        res.json({ success: true, enrollments: results });
+    });
+});
+
+// Get current enrollments
+// Update the current enrollments query
+// Update the current enrollments query
+app.get('/api/current-enrollments', (req, res) => {
+    const sql = `
+        SELECT 
+            e.student_id,
+            u.name as student_name,
+            GROUP_CONCAT(c.course_id) as course_ids,
+            GROUP_CONCAT(CONCAT(c.course_name, ' (', e.status, ')') SEPARATOR ', ') as courses,
+            GROUP_CONCAT(e.enrollment_id) as enrollment_ids,
+            GROUP_CONCAT(e.status) as statuses
+        FROM enrollment e
+        JOIN users u ON e.student_id = u.user_id
+        JOIN courses c ON e.course_id = c.course_id
+        WHERE e.status != 'pending'
+        GROUP BY e.student_id, u.name
+        ORDER BY u.name`;
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching current enrollments:', err);
+            return res.status(500).json({ success: false, message: 'Error fetching enrollments' });
+        }
+        res.json({ success: true, enrollments: results });
+    });
+});
+// Update enrollment status (approve/reject/drop)
+app.put('/api/enrollments/:id', (req, res) => {
+    const { status } = req.body;
+    const enrollmentId = req.params.id;
+    
+    const sql = "UPDATE enrollment SET status = ? WHERE enrollment_id = ?";
+    db.query(sql, [status, enrollmentId], (err) => {
+        if (err) {
+            console.error('Error updating enrollment:', err);
+            return res.status(500).json({ success: false, message: 'Error updating enrollment' });
+        }
+        res.json({ success: true, message: `Enrollment ${status} successfully` });
+    });
+});
+
+// Get enrolled students for instructor
+// Update the instructor-students endpoint
+app.get('/api/instructor-students/:instructorId', (req, res) => {
+    const sql = `
+        SELECT DISTINCT
+            e.student_id,
+            u.name as student_name,
+            u.email as student_email,
+            e.status
+        FROM enrollment e
+        JOIN users u ON e.student_id = u.user_id
+        JOIN courses c ON e.course_id = c.course_id
+        JOIN instructor i ON i.course_id = c.course_id
+        WHERE i.instructor_id = ?
+        ORDER BY u.name`;
+
+    db.query(sql, [req.params.instructorId], (err, results) => {
+        if (err) {
+            console.error('Error fetching instructor students:', err);
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Error fetching students' 
+            });
+        }
+        res.json({ success: true, students: results });
+    });
+});// Update the student-courses endpoint
+app.get("/api/student-courses/:studentId", (req, res) => {
+    if (!req.params.studentId) {
+        return res.status(400).json({ 
+            success: false, 
+            message: "Student ID is required" 
+        });
+    }
+
+    const sql = `
+        SELECT 
+            e.course_id, 
+            c.course_name, 
+            c.credits, 
+            e.status, 
+            u.name as instructor_name
+        FROM enrollment e
+        JOIN courses c ON e.course_id = c.course_id
+        LEFT JOIN instructor i ON i.course_id = c.course_id
+        LEFT JOIN users u ON i.instructor_id = u.user_id
+        WHERE e.student_id = ?`;
+
+    db.query(sql, [req.params.studentId], (err, results) => {
+        if (err) {
+            console.error("Error fetching student courses:", err);
+            return res.status(500).json({ 
+                success: false, 
+                message: "Error fetching enrolled courses" 
+            });
+        }
+
+        res.json({ 
+            success: true, 
+            courses: results 
+        });
+    });
+});
+// Add timetable entry
+app.post('/api/timetable', (req, res) => {
+    const { courseId, day, startTime, endTime, roomNumber } = req.body;
+    const sql = `INSERT INTO timetable (course_id, day_of_week, start_time, end_time, room_number) 
+                 VALUES (?, ?, ?, ?, ?)`;
+    
+    db.query(sql, [courseId, day, startTime, endTime, roomNumber], (err) => {
+        if (err) {
+            console.error('Error adding timetable entry:', err);
+            return res.status(500).json({ success: false, message: 'Error adding entry' });
+        }
+        res.json({ success: true, message: 'Timetable entry added successfully' });
+    });
+});
+
+// Get timetable for student/instructor
+app.get('/api/timetable/:userId', (req, res) => {
+    const userId = req.params.userId;
+    const role = req.session.user.role;
+
+    let sql;
+    if (role === 'student') {
+        sql = `SELECT t.*, c.course_name 
+               FROM timetable t
+               JOIN courses c ON t.course_id = c.course_id
+               JOIN enrollment e ON c.course_id = e.course_id
+               WHERE e.student_id = ? AND e.status = 'approved'`;
+    } else if (role === 'instructor') {
+        sql = `SELECT t.*, c.course_name 
+               FROM timetable t
+               JOIN courses c ON t.course_id = c.course_id
+               JOIN instructor i ON c.course_id = i.course_id
+               WHERE i.instructor_id = ?`;
+    }
+
+    db.query(sql, [userId], (err, results) => {
+        if (err) {
+            console.error('Error fetching timetable:', err);
+            return res.status(500).json({ success: false, message: 'Error fetching timetable' });
+        }
+        res.json({ success: true, timetable: results });
+    });
+});
+// Get all timetable entries (for admin)
+app.get('/api/timetable', (req, res) => {
+    const sql = `SELECT t.*, c.course_name 
+                 FROM timetable t
+                 JOIN courses c ON t.course_id = c.course_id`;
+    
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Error fetching timetable:', err);
+            return res.status(500).json({ success: false, message: 'Error fetching timetable' });
+        }
+        res.json({ success: true, timetable: results });
+    });
+});
+
+// Delete timetable entry
+app.delete('/api/timetable/:id', (req, res) => {
+    const sql = "DELETE FROM timetable WHERE id = ?";
+    db.query(sql, [req.params.id], (err) => {
+        if (err) {
+            console.error('Error deleting timetable entry:', err);
+            return res.status(500).json({ success: false, message: 'Error deleting entry' });
+        }
+        res.json({ success: true, message: 'Entry deleted successfully' });
+    });
+});
