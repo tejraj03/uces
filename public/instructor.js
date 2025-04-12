@@ -50,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function() {
         settingsSection.classList.add("hidden");
         dashboardSection.classList.add("hidden");
         registeredStudentsSection.classList.add("hidden");
+        timetableSection.classList.add("hidden"); // Hide timetable section too
 
         
     }
@@ -211,3 +212,82 @@ window.viewStudentDetails = function(studentId) {
     hideAllSections();
     dashboardSection.classList.remove("hidden");
 });
+// filepath: c:\Users\Admin\Desktop\dbms\uces\public\instructor.js
+// Add this code after existing event listeners
+
+// Create the Timetable Section (only once)
+const timetableSection = document.createElement("div");
+timetableSection.id = "timetable-section";
+timetableSection.classList.add("section", "hidden");
+timetableSection.innerHTML = `
+    <div class="card">
+        <h2>Class Timetable</h2>
+        <div class="table-section">
+            <table id="timetable">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Course</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Room</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Timetable entries will be loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+`;
+document.querySelector(".main-content").appendChild(timetableSection);
+
+// Event handler for the Timetable link
+document.querySelector(".timetable").addEventListener("click", function(event) {
+    event.preventDefault();
+    
+    // Hide all sections (adjust if you have more sections)
+    document.getElementById("user-info").classList.add("hidden");
+    document.getElementById("settings").classList.add("hidden");
+    document.getElementById("dashboard-section").classList.add("hidden");
+    document.getElementById("registered-students").classList.add("hidden");
+    
+    // Show only the timetable section
+    timetableSection.classList.remove("hidden");
+    loadTimetable();
+});
+
+// Function to fetch and display timetable data
+function formatTime(timeStr) {
+    return new Date('1970-01-01T' + timeStr).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+}
+
+function loadTimetable() {
+    const userId = document.getElementById("instructor-id").textContent.split(": ")[1];
+    fetch(`/api/timetable/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.querySelector("#timetable tbody");
+            tbody.innerHTML = "";
+            if (data.success && data.timetable.length > 0) {
+                data.timetable.forEach(entry => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${entry.day_of_week}</td>
+                            <td>${entry.course_name}</td>
+                            <td>${formatTime(entry.start_time)}</td>
+                            <td>${formatTime(entry.end_time)}</td>
+                            <td>${entry.room_number}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="5">No timetable entries found.</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error("Error loading timetable:", error);
+            const tbody = document.querySelector("#timetable tbody");
+            tbody.innerHTML = '<tr><td colspan="5">Error loading timetable.</td></tr>';
+        });
+}

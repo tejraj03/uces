@@ -543,3 +543,131 @@ body {
 #enrolled-courses-table td:last-child {
     padding-right: 20px;
 }
+/* Modern Timetable Styles */
+#timetable-section {
+    margin: 20px auto;
+    padding: 30px;
+    max-width: calc(100% - 260px);
+    margin-left: 260px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+#timetable-section .card {
+    background: #ffffff;
+    border-radius: 15px;
+}
+
+#timetable-section h2 {
+    color: #2C2E39;
+    margin-bottom: 25px;
+    font-size: 28px;
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+#timetable-section h2:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 50px;
+    height: 4px;
+    background: linear-gradient(90deg, #4e54c8, #8f94fb);
+    border-radius: 2px;
+}
+
+#timetable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 20px;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+#timetable thead th {
+    background: linear-gradient(135deg, #4e54c8, #8f94fb);
+    color: white;
+    padding: 20px 15px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+}
+
+#timetable tbody td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #eef0f5;
+    color: #555;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+#timetable tbody tr:last-child td {
+    border-bottom: none;
+}
+
+#timetable tbody tr {
+    transition: all 0.3s ease;
+}
+
+#timetable tbody tr:hover {
+    background-color: #f8f9ff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Status indicators */
+#timetable td:first-child {
+    font-weight: 600;
+    color: #4e54c8;
+}
+
+/* Time columns */
+#timetable td:nth-child(3),
+#timetable td:nth-child(4) {
+    color: #666;
+    font-family: 'Courier New', monospace;
+    font-weight: 500;
+}
+
+/* Room number */
+#timetable td:last-child {
+    font-weight: 500;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+/* Empty state styling */
+#timetable tbody tr td[colspan="5"] {
+    padding: 30px;
+    text-align: center;
+    color: #999;
+    font-style: italic;
+}
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    #timetable-section {
+        margin-left: 0;
+        max-width: 100%;
+        padding: 15px;
+    }
+
+    #timetable thead th {
+        padding: 15px 10px;
+        font-size: 13px;
+    }
+
+    #timetable tbody td {
+        padding: 12px 10px;
+        font-size: 13px;
+    }
+}

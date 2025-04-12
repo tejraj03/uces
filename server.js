@@ -660,3 +660,32 @@ app.delete('/api/timetable/:id', (req, res) => {
         res.json({ success: true, message: 'Entry deleted successfully' });
     });
 });
+// filepath: c:\Users\Admin\Desktop\dbms\uces\server.js
+// Get timetable for student/instructor
+app.get('/api/timetable/:userId', (req, res) => {
+    const userId = req.params.userId;
+    const role = req.session.user.role;
+
+    let sql;
+    if (role === 'instructor') {
+        sql = `SELECT t.*, c.course_name 
+               FROM timetable t
+               JOIN courses c ON t.course_id = c.course_id
+               JOIN instructor i ON c.course_id = i.course_id
+               WHERE i.instructor_id = ?`;
+    } else if (role === 'student') {
+        sql = `SELECT t.*, c.course_name 
+               FROM timetable t
+               JOIN courses c ON t.course_id = c.course_id
+               JOIN enrollment e ON c.course_id = e.course_id
+               WHERE e.student_id = ? AND e.status = 'approved'`;
+    }
+
+    db.query(sql, [userId], (err, results) => {
+        if (err) {
+            console.error('Error fetching timetable:', err);
+            return res.status(500).json({ success: false, message: 'Error fetching timetable' });
+        }
+        res.json({ success: true, timetable: results });
+    });
+});

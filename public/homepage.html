@@ -38,10 +38,10 @@
             </a>
         </li>
         <!-- Add this to the nav_list -->
-<li id="timetableMenu">
-    <a href="#">
+<li>
+    <a href="#" class="timetable">
         <i class='bx bx-calendar'></i>
-        <span class="links_name">Timetable</span>
+        Timetable
     </a>
 </li>
         <li id="settingsMenu">
@@ -65,7 +65,7 @@
         </div>
     </div>
 
-
+<div class ="main-content">
 <!-- Dashboard Welcome Section -->
 <div class="dashboard_welcome" id="dashboardWelcome">
     <h1>Welcome, <span id="welcomeName">Loading...</span>!</h1>
@@ -158,10 +158,88 @@
         </div>
     </div>
    </div>
-
+</div>
     <script>
+    function hideAllSections() {
+    document.getElementById("dashboardWelcome").style.display = "none";
+    document.getElementById("userDetails").style.display = "none";
+    document.getElementById("coursesSection").style.display = "none";
+    document.getElementById("settingsSection").style.display = "none";
+    document.getElementById("timetable-section").style.display = "none";
+}
+function formatTime(timeStr) {
+    return new Date('1970-01-01T' + timeStr).toLocaleTimeString([], { 
+        hour: "2-digit", 
+        minute: "2-digit" 
+    });
+}
+function loadTimetable(userId) {
+    fetch(`/api/timetable/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            const tbody = document.querySelector("#timetable tbody");
+            tbody.innerHTML = "";
+            if (data.success && data.timetable.length > 0) {
+                data.timetable.forEach(entry => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${entry.day_of_week}</td>
+                            <td>${entry.course_name}</td>
+                            <td>${formatTime(entry.start_time)}</td>
+                            <td>${formatTime(entry.end_time)}</td>
+                            <td>${entry.room_number}</td>
+                        </tr>
+                    `;
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="5">No timetable entries found.</td></tr>';
+            }
+        })
+        .catch(error => {
+            console.error("Error loading timetable:", error);
+            const tbody = document.querySelector("#timetable tbody");
+            tbody.innerHTML = '<tr><td colspan="5">Error loading timetable.</td></tr>';
+        });
+}
+
+// Create timetable section
+const timetableSection = document.createElement("div");
+timetableSection.id = "timetable-section";
+timetableSection.style.display = "none";
+timetableSection.innerHTML = `
+    <div class="card">
+        <h2>Class Timetable</h2>
+        <div class="table-section">
+            <table id="timetable">
+                <thead>
+                    <tr>
+                        <th>Day</th>
+                        <th>Course</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Room</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Timetable entries will be loaded dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+`;
         document.addEventListener("DOMContentLoaded", function () {
 // Fetch and display the user's name and ID in the sidebar
+// Append timetable section to main content
+    document.querySelector(".main-content").appendChild(timetableSection);
+
+    // Add timetable click handler
+    document.querySelector(".timetable").addEventListener("click", function(event) {
+        event.preventDefault();
+        hideAllSections();
+        timetableSection.style.display = "block";
+        const userId = document.getElementById("userId").textContent.split(": ")[1];
+        loadTimetable(userId);
+    });
 // Fetch and display the user's name and ID in the sidebar
 fetch('/user-data')
     .then(response => response.json())
@@ -196,6 +274,8 @@ function hideAllSections() {
     userDetails.style.display = "none";
     coursesSection.style.display = "none";
     document.getElementById("settingsSection").style.display = "none";
+    document.getElementById("timetable-section").style.display = "none";
+
     
 }
 
@@ -423,6 +503,7 @@ document.addEventListener("DOMContentLoaded", function() {
             }
         });
 });
+
 
  </script>
 
