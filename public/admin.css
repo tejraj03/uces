@@ -569,6 +569,8 @@ body {
     background: #ddd;
     border-radius: 8px;
     overflow: hidden;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .time-column {
@@ -580,7 +582,9 @@ body {
     background: #2C2E39;
     color: white;
     text-align: center;
-    font-weight: 500;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 14px;
 }
 
 .time-slot {
@@ -588,6 +592,8 @@ body {
     background: white;
     text-align: center;
     border-bottom: 1px solid #eee;
+    font-size: 14px;
+    color: #333;
 }
 
 .day-column {
@@ -600,11 +606,14 @@ body {
     background: #e3f2fd;
     border-radius: 4px;
     font-size: 13px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .class-slot .course-name {
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 5px;
+    color: #2C2E39;
 }
 
 .class-slot .room {
@@ -612,23 +621,70 @@ body {
     color: #666;
 }
 
-/* Admin Timetable Form Styles */
-#add-timetable-form {
-    display: grid;
-    gap: 15px;
-    max-width: 500px;
-    margin-bottom: 20px;
-}
-
-#add-timetable-form select,
-#add-timetable-form input {
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
-
+/* Timetable Table Styles */
 #timetable {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#timetable thead th {
+    background: #2C2E39;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 14px;
+    border-bottom: 2px solid #ddd;
+}
+
+#timetable tbody td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    font-size: 14px;
+    color: #333;
+}
+
+#timetable tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Dark Mode Adjustments */
+.dark-mode .timetable-grid {
+    background: #444;
+}
+
+.dark-mode .time-header, .dark-mode .day-header {
+    background: #222;
+    color: #fff;
+}
+
+.dark-mode .time-slot {
+    background: #333;
+    color: #fff;
+}
+
+.dark-mode .class-slot {
+    background: #555;
+    color: #fff;
+}
+
+.dark-mode #timetable thead th {
+    background: #222;
+    color: #fff;
+}
+
+.dark-mode #timetable tbody td {
+    background: #333;
+    color: #fff;
+}
+
+.dark-mode #timetable tbody tr:hover {
+    background-color: #444;
 }
