@@ -3,35 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>UCES - University Course Enrollment System</title>
     <link rel="stylesheet" href="welcome.css">
-    <link rel="icon" type="image.jpg" href="">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <header>
-        <div class="navbar">
-            <div class="logo"><a href="#"><br></a></div>
-            <ul class="links">
-                <li><a href="Home">Home</a></li>
-                <li><a href="login.html">Sign in</a></li>
-                <li><a href="About">About</a></li>
-                <li><a href="Contact">Contact</a></li>
+        <nav class="navbar">
+            <div class="logo">
+                <a href="#home">University Course Enrollment System</a>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="login.html" class="nav-btn">Sign In</a></li>
             </ul>
-            <a href="#" class="action_btn">Get Started</a>
             <div class="toggle_btn">
-                <i class="fa-solid fa-bars"></i>
+                <i class="fas fa-bars"></i>
+            </div>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1>Welcome to University Course Enrollment System</h1>
+            <p>Streamline your academic journey with our modern course enrollment system.</p>
+            <div class="cta-buttons">
+                <a href="login.html" class="primary-btn">Get Started</a>
+                <a href="#about" class="secondary-btn">Learn More</a>
             </div>
         </div>
+    </section>
 
-        <div class="dropdown_menu ">
-            <li><a href="/">Home</a></li>
-            <li><a href="login.html">Sign in</a></li>
-            <li><a href="About">About</a></li>
-            <li><a href="Contact">Contact</a></li>
-            <li><a href="#" class="action_btn">Get Started</a></li>
+    <section id="about" class="about">
+        <div class="container">
+            <h2>About Our System</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-laptop-code"></i>
+                    <h3>Easy Enrollment</h3>
+                    <p>Simple and intuitive course registration process for all students.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-clock"></i>
+                    <h3>Real-time Updates</h3>
+                    <p>Get instant notifications about course availability and schedules.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Track Progress</h3>
+                    <p>Monitor your academic journey with detailed analytics.</p>
+                </div>
+            </div>
         </div>
-    </header>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <div class="contact-wrapper">
+                <div class="contact-info">
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <p>SRM University, Ramapuram</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-envelope"></i>
+                        <p>srmuniversityadmin@gmail.com</p>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-phone"></i>
+                        <p>+91 9xxxx 9xxxx</p>
+                    </div>
+                </div>
+                <form class="contact-form">
+                    <input type="text" placeholder="Your Name" required>
+                    <input type="email" placeholder="Your Email" required>
+                    <textarea placeholder="Your Message" required></textarea>
+                    <button type="submit" class="primary-btn">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </section>
 
     <script src="welcome.js"></script>
 </body>
