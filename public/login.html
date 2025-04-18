@@ -10,12 +10,12 @@
 <body>
     <div class="container">
         <header>Login</header>
-        <form action="http://localhost:3000/login" method="post" onsubmit="saveLoginInfo()">
-            <label>Email</label>
-            <input type="email" name="email" id="email" required>
+<form action="http://localhost:3000/login" method="post" onsubmit="saveLoginInfo()" autocomplete="off">
+    <label>Email</label>
+    <input type="email" name="email" id="email" required autocomplete="off">
 
-            <label>Password</label>
-            <input type="password" name="password" id="password" required>
+    <label>Password</label>
+    <input type="password" name="password" id="password" required autocomplete="off">
 
             <div class="forgot">
                 <section>
@@ -23,7 +23,7 @@
                     <label for="rememberMe">Remember Me</label>
                 </section>
                 <section>
-                    <a href="#">Forgot password?</a>                
+                    <a href="welcome.html">Welcome Page</a>                
                 </section>
             </div>
 
@@ -35,27 +35,51 @@
     </div>
 
     <script>
-        // Load stored email when page loads
-        window.onload = function() {
-            if (localStorage.getItem("rememberMe") === "true") {
-                document.getElementById("email").value = localStorage.getItem("email");
-                document.getElementById("rememberMe").checked = true;
-            }
-        };
-
-        // Save login info if "Remember Me" is checked
-        function saveLoginInfo() {
-            let email = document.getElementById("email").value;
-            let rememberMe = document.getElementById("rememberMe").checked;
-
-            if (rememberMe) {
-                localStorage.setItem("email", email);
-                localStorage.setItem("rememberMe", "true");
-            } else {
-                localStorage.removeItem("email");
-                localStorage.removeItem("rememberMe");
-            }
+     // Combined window.onload function
+    window.onload = function() {
+        // Check for remembered email
+        if (localStorage.getItem("rememberMe") === "true") {
+            document.getElementById("email").value = localStorage.getItem("email");
+            document.getElementById("rememberMe").checked = true;
+        } else {
+            // Clear form fields if not remembered
+            document.getElementById("email").value = "";
+            document.getElementById("password").value = "";
         }
+        
+        // Prevent back button issues
+        if (window.history && window.history.pushState) {
+            window.history.pushState("", document.title, window.location.pathname);
+            window.addEventListener("popstate", function() {
+                window.history.pushState("", document.title, window.location.pathname);
+            });
+        }
+    };
+
+    // Combined saveLoginInfo function
+    function saveLoginInfo() {
+        const email = document.getElementById("email").value;
+        const rememberMe = document.getElementById("rememberMe").checked;
+
+        if (rememberMe) {
+            localStorage.setItem("email", email);
+            localStorage.setItem("rememberMe", "true");
+        } else {
+            localStorage.removeItem("email");
+            localStorage.removeItem("rememberMe");
+        }
+
+        // Clear password field for security
+        setTimeout(() => {
+            document.getElementById("password").value = "";
+        }, 100);
+    }
+
+    // Prevent accessing login page after logout
+    if (performance.navigation.type === 2) {
+        location.reload(true);
+    }
+
     </script>
 </body>
 </html>

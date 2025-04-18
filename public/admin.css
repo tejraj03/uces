@@ -81,16 +81,41 @@ body {
     background: rgba(255, 255, 255, 0.1);
 }
 
+/* Update/add these logout styles */
 .logout {
     position: absolute;
-    bottom: 20px;
-    margin-left: 20px;
-    z-index: 100;
-    font-size: 35px;
+    bottom: 0;
+    width: 100%;
+    padding: 20px;
+}
+
+.logout a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color:whitesmoke;
+    transition: all 0.3s ease;
+    padding: 10px;
 }
 
 .logout a i {
-    color: azure;
+    font-size: 20px;
+}
+
+.logout a:hover {
+    color: bisque;
+    background: rgba(78, 84, 200, 0.1);
+    transform: translateX(5px);
+}
+
+/* Dark mode adjustments */
+.dark-mode .logout a {
+    color: #fff;
+}
+
+.dark-mode .logout a:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* Dark Mode Styles */

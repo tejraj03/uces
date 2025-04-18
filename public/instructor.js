@@ -88,6 +88,37 @@ document.addEventListener("DOMContentLoaded", function() {
             tbody.innerHTML = '<tr><td colspan="5">Error loading timetable. Please try again.</td></tr>';
         }
     });
+    const logoutBtn = document.querySelector(".logout i");
+    logoutBtn.addEventListener("click", async function(e) {
+        e.preventDefault();
+        try {
+            const response = await fetch('/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.ok) {
+                // Clear any stored data
+                sessionStorage.clear();
+                localStorage.clear();
+                
+                // Prevent going back
+                window.location.replace('/login.html');
+                
+                // Prevent browser back button
+                window.history.pushState(null, '', '/login.html');
+                window.addEventListener('popstate', function() {
+                    window.history.pushState(null, '', '/login.html');
+                });
+            } else {
+                throw new Error('Logout failed');
+            }
+        } catch (error) {
+            console.error("Error during logout:", error);
+            alert("Error logging out. Please try again.");
+        }
+    });
+
     // Create initial dashboard with placeholder welcome message
     dashboardSection.innerHTML = `
         <div class="welcome-message">

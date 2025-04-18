@@ -19,6 +19,35 @@ document.addEventListener('DOMContentLoaded', function() {
         loadInstructors();
         loadCourses();
     });
+    document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+        e.preventDefault();
+        try {
+            const response = await fetch('/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.ok) {
+                // Clear any stored data
+                sessionStorage.clear();
+                localStorage.clear();
+                
+                // Prevent going back
+                window.location.replace('/login.html');
+                
+                // Prevent browser back button
+                window.history.pushState(null, '', '/login.html');
+                window.addEventListener('popstate', function() {
+                    window.history.pushState(null, '', '/login.html');
+                });
+            } else {
+                throw new Error('Logout failed');
+            }
+        } catch (error) {
+            console.error("Error during logout:", error);
+            alert("Error logging out. Please try again.");
+        }
+    });
 
     // Load available courses for the dropdown
     function loadCourses() {

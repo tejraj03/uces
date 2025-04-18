@@ -17,7 +17,15 @@ app.use(session({
     resave: false,
     saveUninitialized: true
 }));
-
+// Add this middleware before your routes
+app.use((req, res, next) => {
+    res.set({
+        'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+    });
+    next();
+});
 // Database Connection
 const db = mysql.createConnection({
     host: "localhost",
@@ -191,12 +199,16 @@ app.get("/get-instructor-data", (req, res) => {
 
 
 // Logout Route
+// Replace the existing logout route (around line 420)
 app.post("/logout", (req, res) => {
-    req.session.destroy(err => {
+    req.session.destroy((err) => {
         if (err) {
-            return res.send("Error logging out.");
+            console.error("Error destroying session:", err);
+            return res.status(500).json({ success: false, message: "Error logging out" });
         }
-        res.redirect("/login.html");
+        // Clear session cookie
+        res.clearCookie('connect.sid');
+        res.json({ success: true, message: "Logged out successfully" });
     });
 });
 
@@ -246,8 +258,13 @@ app.post("/update-password", async (req, res) => {
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "welcome.html"));
 });
-app.get("/login", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "login.html"));
+app.get('/login', (req, res) => {
+    res.set({
+        'Cache-Control': 'no-store, no-cache, must-revalidate, private',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+    });
+    res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
 
 // Start Server
