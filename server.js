@@ -199,7 +199,6 @@ app.get("/get-instructor-data", (req, res) => {
 
 
 // Logout Route
-// Replace the existing logout route (around line 420)
 app.post("/logout", (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -253,8 +252,6 @@ app.post("/update-password", async (req, res) => {
         });
     });
 });
-
-
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "welcome.html"));
 });
@@ -271,7 +268,7 @@ app.get('/login', (req, res) => {
 app.listen(port, () => {
     console.log(`🚀 Server running at http://localhost:${port}`);
 });
-// Add this route to your server.js
+// Fetch all courses
 app.get("/courses", (req, res) => {
     const sql = "SELECT course_id, course_name, credits FROM courses";
     db.query(sql, (err, results) => {
@@ -321,7 +318,7 @@ app.get("/api/instructors", (req, res) => {
     });
 });
 
-// Add new instructor (updated to use nested callbacks)
+// Add new instructor 
 app.post("/api/instructors", (req, res) => {
     const { instructorName, email, password, courseId } = req.body;
     bcrypt.hash(password, 10, (err, hashedPassword) => {
