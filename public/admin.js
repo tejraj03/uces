@@ -19,6 +19,35 @@ document.addEventListener('DOMContentLoaded', function() {
         loadInstructors();
         loadCourses();
     });
+    document.getElementById('logoutBtn').addEventListener('click', async function(e) {
+        e.preventDefault();
+        try {
+            const response = await fetch('/logout', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.ok) {
+                // Clear any stored data
+                sessionStorage.clear();
+                localStorage.clear();
+                
+                // Prevent going back
+                window.location.replace('/login.html');
+                
+                // Prevent browser back button
+                window.history.pushState(null, '', '/login.html');
+                window.addEventListener('popstate', function() {
+                    window.history.pushState(null, '', '/login.html');
+                });
+            } else {
+                throw new Error('Logout failed');
+            }
+        } catch (error) {
+            console.error("Error during logout:", error);
+            alert("Error logging out. Please try again.");
+        }
+    });
 
     // Load available courses for the dropdown
     function loadCourses() {
@@ -314,45 +343,76 @@ function loadEnrollments() {
         });
 
     // Load current enrollments
-// Update the current enrollments section in loadEnrollments function
-// Update the current enrollments section in loadEnrollments function
+// Replace the current enrollments fetch code with this updated version:
 fetch('/api/current-enrollments')
     .then(response => response.json())
     .then(data => {
         if (data.success) {
             const tbody = document.querySelector('#current-enrollments-table tbody');
             tbody.innerHTML = '';
+            
+            // Group enrollments by student
+            const studentEnrollments = new Map();
+            
             data.enrollments.forEach(enrollment => {
+                const studentId = enrollment.student_id;
+                
+                if (!studentEnrollments.has(studentId)) {
+                    studentEnrollments.set(studentId, {
+                        student_id: enrollment.student_id,
+                        student_name: enrollment.student_name,
+                        courses: []
+                    });
+                }
+                
                 const courses = enrollment.courses.split(', ');
                 const enrollmentIds = enrollment.enrollment_ids.split(',');
                 const statuses = enrollment.statuses.split(',');
-                const courseIds = enrollment.course_ids.split(','); // Add this line
+                const courseIds = enrollment.course_ids.split(',');
                 
-                const coursesList = courses.map((course, index) => {
-                    const status = statuses[index];
-                    const enrollmentId = enrollmentIds[index];
-                    const courseId = courseIds[index]; // Add this line
-                    const actionButton = status === 'dropped' 
-                        ? `<button onclick="reEnrollStudent(${enrollmentId})" class="action-button re-enroll-btn">Re-enroll</button>`
-                        : `<button onclick="dropStudent(${enrollmentId})" class="action-button delete-btn">Drop</button>`;
-
-                    return `
+                for (let i = 0; i < courses.length; i++) {
+                    studentEnrollments.get(studentId).courses.push({
+                        course_id: courseIds[i],
+                        course_name: courses[i],
+                        status: statuses[i],
+                        enrollment_id: enrollmentIds[i]
+                    });
+                }
+            });
+            
+            // Generate HTML for each student
+            studentEnrollments.forEach(student => {
+                // Add student header row
+                tbody.innerHTML += `
+                    <tr class="student-header">
+                        <td rowspan="${student.courses.length}">${student.student_id}</td>
+                        <td rowspan="${student.courses.length}">${student.student_name}</td>
+                        <td>${student.courses[0].course_id}</td>
+                        <td>${student.courses[0].course_name.split(' (')[0]}</td>
+                        <td><span class="status-${student.courses[0].status.toLowerCase()}">${student.courses[0].status}</span></td>
+                        <td>${student.courses[0].status === 'dropped' 
+                            ? `<button onclick="reEnrollStudent(${student.courses[0].enrollment_id})" class="action-button re-enroll-btn">Re-enroll</button>`
+                            : `<button onclick="dropStudent(${student.courses[0].enrollment_id})" class="action-button delete-btn">Drop</button>`
+                        }</td>
+                    </tr>`;
+                
+                // Add remaining courses rows
+                for (let i = 1; i < student.courses.length; i++) {
+                    const course = student.courses[i];
+                    tbody.innerHTML += `
                         <tr>
-                            <td>${enrollment.student_id}</td>
-                            <td>${enrollment.student_name}</td>
-                            <td>${courseId}</td> <!-- Add Course ID -->
-                            <td>${course}</td>
-                            <td><span class="status-${status.toLowerCase()}">${status}</span></td>
-                            <td>${actionButton}</td>
-                        </tr>
-                    `;
-                }).join('');
-
-                tbody.innerHTML += coursesList;
+                            <td>${course.course_id}</td>
+                            <td>${course.course_name.split(' (')[0]}</td>
+                            <td><span class="status-${course.status.toLowerCase()}">${course.status}</span></td>
+                            <td>${course.status === 'dropped'
+                                ? `<button onclick="reEnrollStudent(${course.enrollment_id})" class="action-button re-enroll-btn">Re-enroll</button>`
+                                : `<button onclick="dropStudent(${course.enrollment_id})" class="action-button delete-btn">Drop</button>`
+                            }</td>
+                        </tr>`;
+                }
             });
         }
     });
-
 // Add the re-enroll function
 window.reEnrollStudent = function(enrollmentId) {
     if (confirm('Are you sure you want to re-enroll this student?')) {

@@ -308,23 +308,36 @@ userMenu.addEventListener("click", function (event) {
         })
         .catch(err => console.error("Error fetching user data:", err));
 });    // Handle logout functionality
+// Replace the existing logout event listener with this (around line 420)
 const logoutIcon = document.getElementById("log_out");
-logoutIcon.addEventListener("click", function () {
-    fetch('/logout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-    })
-        .then(response => {
-            if (response.ok) {
-                // Redirect to the login page after successful logout
-                window.location.href = "/login";
-            } else {
-                alert("Error logging out. Please try again.");
-            }
-        })
-        .catch(err => console.error("Error logging out:", err));
-});
+logoutIcon.addEventListener("click", async function() {
+    try {
+        const response = await fetch('/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+        });
 
+        if (response.ok) {
+            // Clear any stored data
+            sessionStorage.clear();
+            localStorage.clear();
+            
+            // Replace the current history entry
+            window.location.replace('/login.html');
+            
+            // Prevent back button
+            window.history.pushState(null, '', '/login.html');
+            window.addEventListener('popstate', function() {
+                window.history.pushState(null, '', '/login.html');
+            });
+        } else {
+            throw new Error('Logout failed');
+        }
+    } catch (error) {
+        console.error("Error during logout:", error);
+        alert("Error logging out. Please try again.");
+    }
+});
     // Show Add/Drop Courses Section
     addDropCoursesMenu.addEventListener("click", function (event) {
         event.preventDefault();
