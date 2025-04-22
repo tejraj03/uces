@@ -501,8 +501,7 @@ app.get('/api/pending-enrollments', (req, res) => {
 });
 
 // Get current enrollments
-// Update the current enrollments query
-// Update the current enrollments query
+
 app.get('/api/current-enrollments', (req, res) => {
     const sql = `
         SELECT 
